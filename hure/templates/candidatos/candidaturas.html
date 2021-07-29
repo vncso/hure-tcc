@@ -1,0 +1,77 @@
+{% extends 'base-candidato.html' %}
+    {%block conteudo %}
+        <div id="ult_vagas" class="col-12 float-left">
+            <div class="col-12 float-left text-center">
+                <h5>Vagas para qual você se candidatou:</h5>
+            </div>
+            {%for vg in vagas%}
+                {% for vaga in vg['candidaturas'] %}
+                    {% if vaga['status'] != 3 %}
+                        <div class="col-12 col-md-4 col-xl-3 float-left">
+                            <div class="col-12 vaga">
+                                <h5 class="titulo_vaga"><a href="{{url_for('vagas.vaga', empresa=vaga['empresa'], idvaga=vaga['id'])}}" target="_blank">{{vaga['cargo']}}</a></h5>
+                                <div class="info_vaga">
+                                     <div class="info_vaga_item">
+                                        <span>{{vaga['nome_empresa']}}</span>
+                                    </div>
+                                    <div class="info_vaga_item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{vaga['cidade']}}/{{vaga['estado']}}</span>
+                                    </div>
+                                    <div class="info_vaga_item">
+                                        <i class="fas fa-users"></i>
+                                        <span>{{vaga['candidatos']}} candidatos</span>
+                                    </div>
+                                </div>
+                                <div class="btns_vaga">
+                                    <a href="{{url_for('vagas.vaga', empresa=vaga['empresa'], idvaga=vaga['id'])}}" class="btn btn-outline-dark btn-block">Ver vaga</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <div class="col-12 float-left text-center">
+                <h5>Empresas com seu currículo no Banco de Talentos:</h5>
+            </div>
+            {%for vg in vagas%}
+                {% for vaga in vg['candidaturas'] %}
+                    {% if vaga['status'] == 3 %}
+                        <div class="col-12 col-md-4 col-xl-3 float-left">
+                            <div class="col-12 vaga">
+                                <h5 class="titulo_vaga"><a href="{{url_for('vagas.vaga', empresa=vaga['empresa'], idvaga=vaga['_id'])}}" target="_blank">{{vaga['nome_empresa']}}</a></h5>
+                                <div class="info_vaga">
+                                    <div class="info_vaga_item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{vaga['cidade']}}/{{vaga['estado']}}</span>
+                                    </div>
+                                    <div class="info_vaga_item">
+                                        <i class="fas fa-users"></i>
+                                        <span>{{vaga['candidatos']}} candidatos</span>
+                                    </div>
+                                </div>
+                                <div class="btns_vaga">
+                                    <a href="{{url_for('vagas.vaga', empresa=vaga['empresa'], idvaga=vaga['_id'])}}" class="btn btn-outline-dark btn-block">Ver vaga</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var maxHeight = -1;
+
+                $('.vaga').each(function() {
+                    maxHeight = maxHeight > $(this).height() ? maxHeight : $(this).height();
+                });
+
+                $('.vaga').each(function() {
+                    $(this).height(maxHeight);
+                });
+             });
+        </script>
+
+    {% endblock %}

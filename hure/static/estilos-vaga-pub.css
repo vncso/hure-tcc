@@ -1,0 +1,277 @@
+body{
+    background-color: #eee;
+}
+#menu{
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+}
+#menu ul {
+    padding: 0;
+}
+#logo{
+    background: -webkit-linear-gradient(cyan,deepskyblue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Fredoka One';
+    font-size: 2em;
+    margin-top: -1%;
+    text-align: center;
+}
+ul {
+    height: 0;
+    text-align: center;
+    transition: height 0.7s ;
+}
+ul li.item_menu{
+    display: none;
+}
+#menu_mobile{
+    height: 0;
+    transition: height 0.7s ;
+    left: -10000;
+}
+.item_mm{
+    margin-bottom: 4%;
+}
+.item_menu_mobile{
+    padding: 2%;
+    margin-top: 5%;
+    border: 1px solid deepskyblue;
+    list-style: none;
+    height: 18%;
+    text-align: center;
+    border-radius: 8px;
+}
+#auth_menu{
+    padding: 3%;
+}
+#auth_menu div{
+    margin: 0;
+}
+#login_btn{
+    background-color: deepskyblue;
+    color: #fff;
+    padding: 2%;
+    border-radius: 50px;
+    text-align: center;
+    list-style: none;
+    margin-left: 45%;
+}
+.acessar_btn{
+    background-color: deepskyblue;
+    color: #fff;
+    padding: 2%;
+    border-radius: 50px;
+    text-align: center;
+    list-style: none;
+    border: none;
+}
+.login_form{
+    padding: 2%;
+}
+.login_form span{
+    color: #999;
+    font-size: 0.9em;
+}
+.login_form input{
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+#cadastro_btn {
+    background-color: #ddd;
+    color: #333;
+    padding: 2%;
+    border-radius: 50px;
+    text-align: center;
+    list-style: none;
+    margin-left: 30%;
+}
+#cadastro_btn_2 {
+    background-color: #ddd;
+    color: #333;
+    padding: 2%;
+    border-radius: 50px;
+    text-align: center;
+    list-style: none;
+}
+#sair_btn{
+    background-color: #fff;
+    color: #f00;
+    padding: 2%;
+    border-radius: 50px;
+    text-align: center;
+    list-style: none;
+}
+#sair_btn a{
+    color: #f00;
+}
+#perfil_menu{
+    background-color: deepskyblue;
+    color: #fff;
+    padding: 2%;
+    border-radius: 50px;
+    text-align: center;
+    list-style: none;
+    margin-left: 45%;
+}
+#perfil_menu a{
+    color: #333;
+}
+#perfil_menu a:hover{
+    color: deepskyblue;
+}
+#vaga{
+    background-color: #fff;
+    border-radius: 8px;
+    margin-top: 15%;
+}
+#info_empresa{
+    background-color: #fff;
+    float: left;
+    padding: 1%;
+    text-align: center;
+}
+#dados_empresa{
+     font-family: 'Jost';
+}
+#logo_empresa {
+    border-radius: 8px;
+}
+#logo_empresa img{
+    border-radius: 8px;
+}
+#info_vaga{
+    background-color: #fff;
+    padding: 1%;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    height: auto;
+}
+#info_vaga h2{
+    font-family: 'Jost';
+}
+#intro_empresa{
+    padding: 1%;
+}
+#intro_empresa h5{
+    font-family: 'Jost';
+}
+#descri_vaga{
+    padding: 1%;
+}
+#descri_vaga h5{
+    font-family: 'Jost';
+}
+#descri_vaga ul{
+    height: auto;
+    list-style: square;
+}
+.campo-form{
+    padding: 1%;
+}
+footer{
+    background-color: deepskyblue;
+    height: 40vh;
+    padding: 3%;
+}
+#logo_footer{
+    color: #fff;
+    font-family: 'Fredoka One';
+    font-size: 1.5em;
+    text-align: center;
+    margin: auto;
+}
+footer ul{
+    list-style: none;
+    text-align: left;
+    color: #fff;
+}
+#links_uteis {
+    padding: 3%;
+}
+#links_uteis span{
+    font-family: 'Jost';
+    color: #fff;
+    font-size: 1.2em;
+}
+#login-box{
+    margin: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 2%;
+}
+#login-box .campo-form{
+    margin-bottom: 4%;
+}
+@media screen and (min-width: 770px) {
+    header{
+        float: left;
+    }
+    #menu{
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+    }
+    #logo{
+        background: -webkit-linear-gradient(cyan,deepskyblue);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-family: 'Fredoka One';
+        font-size: 1.5em;
+        margin-top: -1%;
+    }
+    ul li.item_menu{
+        display: block;
+    }
+    .item_menu {
+        float: left;
+        padding: 2%;
+        list-style: none;
+    }
+    #auth_menu{
+        padding: 1%;
+    }
+    #login_btn{
+        background-color: deepskyblue;
+        color: #fff;
+        padding: 2%;
+        border-radius: 50px;
+        text-align: center;
+        list-style: none;
+        margin-left: 0;
+    }
+    .acessar_btn{
+        background-color: deepskyblue;
+        color: #fff;
+        padding: 2%;
+        border-radius: 50px;
+        text-align: center;
+        list-style: none;
+        border: none;
+    }
+    .login_form{
+        padding: 2%;
+    }
+    .login_form span{
+        color: #999;
+        font-size: 0.9em;
+    }
+    .login_form input{
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+    #cadastro_btn {
+        background-color: #ddd;
+        color: #fff;
+        padding: 2%;
+        border-radius: 50px;
+        text-align: center;
+        list-style: none;
+        margin-left: 0;
+    }
+    #info_empresa{
+        float: right;
+    }
+    #vaga{
+        margin-top: 5%;
+    }
+}

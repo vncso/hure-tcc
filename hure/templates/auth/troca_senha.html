@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- estilos personalizados -->
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos.css')}}">
+        <script type="text/javascript" src="{{url_for('static', filename='script.css')}}"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- Fonts e ícones -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8c452e77e4.js" crossorigin="anonymous"></script>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest')}}">
+
+        <style>
+            main{
+                padding: 2%;
+            }
+            #login-box{
+                margin: auto;
+                margin-top: 5%;
+                box-shadow: 1px 1px 15px  #bbb;
+                padding: 2%;
+                border-radius: 8px;
+                border: 1px solid #aaa;
+            }
+            #login-box h1{
+                background: -webkit-linear-gradient(cyan,deepskyblue);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-family: 'Fredoka One';
+                font-size: 2em;
+            }
+            .campo-form {
+                padding: 1%;
+                margin-bottom: 2%;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            
+        </header>
+        <main>
+            <div id="login-box" class="col-12 col-md-4">
+                <form method='post'>
+                    <a href="{{url_for('index')}}"><h1 style="font-family: 'Fredoka One';" class="text-center">HuRe</h1></a>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <div class="campo-form">
+                        <span>Senha atual:</span>
+                        <input type="password" class="form-control form-control-md" name="senha_atual" placeholder="********">
+                    </div>
+                    <div class="campo-form">
+                        <span>nova senha:</span>
+                        <input type="password" class="form-control form-control-md" name="senha_nova" placeholder="********">
+                    </div>
+                    <div class="campo-form">
+                        <span>confirmar senha:</span>
+                        <input type="password" class="form-control form-control-md" name="conf_senha_nova" placeholder="********">
+                    </div>
+                    <div class="campo-form">
+                        <button type="submit" class="btn btn-outline-success btn-block">Alterar a senha</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <footer>
+        </footer>
+    </body>
+</html>

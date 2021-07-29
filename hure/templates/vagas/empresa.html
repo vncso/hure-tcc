@@ -1,0 +1,199 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos-vaga-pub.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos-painel.css')}}">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- Fonts e ícones -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8c452e77e4.js" crossorigin="anonymous"></script>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest')}}">
+    </head>
+    <body>
+        <header onload="mudaBanner()" class="col-12 float-left">
+            <div id="menu" class="col-12 fixed-top float-left">
+                <ul>
+                    <div class="col-3 col-md-8 float-left">
+                        <span id="logo"  onclick="mostra_menu()" class="item_menu">HuRe</span>
+                        <li class="item_menu">Início</li>
+                        <li class="item_menu">Serviços</li>
+                        <li class="item_menu">Sobre</li>
+                        <li class="item_menu">Contato</li>
+                    </div>
+                    <div id="auth_menu" class="col-9 col-md-4 float-right">
+                        {% if session['cand_id'] %}
+                            <div class="col-7 col-md-6 float-right">
+                                <li id="sair_btn" class="col-12"><a href="{{url_for('auth.logout')}}">sair</a></li>
+                            </div>
+                            <div class="col-5 col-md-6 float-right">
+                                <li id="perfil_menu"><a href="{{url_for('person.curriculo')}}">Painel</a></li>
+                            </div>
+                        {% else %}
+                            <div class="col-7 col-md-6 float-right">
+                                <a href="{{url_for('person.register')}}"><li id="cadastro_btn" style="color: #333;" class="col-12">Cadastrar</li></a>
+                            </div>
+                            <div class="col-5 col-md-6 float-right">
+                                <div class="dropdown">
+                                    <li id="login_btn" class="col-12" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="float-left">Login</li>
+                                    <div class="dropdown-menu" style="width: 300px;" aria-labelledby="dropdownMenu2">
+                                        <form id="login_dropdown" method="post" class="dropdown">
+                                            <div id="obgt_empresa">
+                                                <h6>Empresa</h6>
+                                                <div class="login_form">
+                                                    <span>Cod. Empresa:</span>
+                                                    <input type="number" class="form-control form-control-md" name="empresa" placeholder="0000">
+                                                </div>
+                                                <div id="obgt_candidato">
+                                                    <h6>Candidato</h6>
+                                                    <div class="login_form">
+                                                        <span>Usuário:</span>
+                                                        <input required type="text" size="30" class="form-control form-control-md" name="usuario" placeholder="user@hure.com.br">
+                                                    </div>
+                                                    <div class="login_form">
+                                                        <span>Senha:</span>
+                                                        <input required type="password" class="form-control form-control-md" name="senha" placeholder="********">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="login_form">
+                                                <button type="submit" class="acessar_btn col-12">Acessar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </ul>
+                <div id="menu_mobile" class="col-12 float-left">
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Início</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Serviços</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Sobre</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Contato</li>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="col-12 float-left" style="margin-top: 5%;">
+                <div id="info_empresa" class="col-12 col-md-4">
+                    <div id="empresa">
+                        <div id="logo_empresa">
+                            <img src="" height="125" width="125">
+                        </div>
+                        <div id="dados_empresa">
+                            <h4>{{dados_empresa['nome']}}</h4>
+                            <h5>{{dados_empresa['endereco']['cidade']}}/{{dados_empresa['endereco']['estado']}}</h5>
+                        </div>
+                        <div id="opt_vaga">
+                            <div class="campo-form col-12">
+                                <a href="{{url_for('person.login')}}" class="acessar_btn col-12">Acesse sua conta!</a>
+                            </div>
+                            <div class="campo-form col-12">
+                                <a href="{{url_for('person.register')}}" id="cadastro_btn_2" class="col-12">Cadastrar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-8 float-left">
+                    {% if vagas|length > 0 %}
+                        <div id="ult_vagas" class="col-12 float-left">
+                            <div class="col-12 float-left text-center">
+                                <h5>Últimas vagas</h5>
+                            </div>
+                            {%for vaga in vagas%}
+                                {% if vaga['publicada'] == 1 or vaga['publicada'] == 2 %}
+                                    <div class="col-12 col-md-4 float-left">
+                                        <div class="col-12 vaga">
+                                            <h5 class="titulo_vaga"><a href="{{url_for('vagas.vaga', empresa=empresa, idvaga=vaga['_id'])}}" target="_blank">{{vaga['cargo']}}</a></h5>
+                                            <div class="info_vaga">
+                                                <div class="info_vaga_item">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    <span>{{vaga['localizacao']['cidade']}}/{{vaga['localizacao']['estado']}}</span>
+                                                </div>
+                                                <div class="info_vaga_item">
+                                                    <i class="fas fa-users"></i>
+                                                    <span>{{vaga['candidatos']}} candidatos</span>
+                                                </div>
+                                            </div>
+                                            <div class="descri_vaga">
+                                                <p>{{vaga['descricao'][:40]}}...</p>
+                                            </div>
+                                            <div class="btns_vaga">
+                                                <a href="{{url_for('vagas.vaga', empresa=empresa, idvaga=vaga['_id'])}}" class="btn btn-outline-success btn-block">Ver vaga!</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+        <footer class="col-12 float-left">
+            <div id="logo_footer" class="col-12 col-md-3 float-left">
+                <div class="container col-12 float-left">
+                    <span>HuRe</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left">
+                <div id="links_uteis" class="container col-12 float-left">
+                    <span>Links úteis</span>
+                    <ul class="col-12 float-left">
+                        <li>Sobre o HuRe</li>
+                        <li>Privacidade e dados pessoais (LGPD)</li>
+                        <li>Nossos clientes</li>
+                        <li>entre em contato</li>
+                        <li>Carreiras</li>
+                        <li>NoXP</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+        <script type="text/javascript">
+            function mostra_menu(){
+                menu_mobile = document.getElementById('menu_mobile');
+
+                if(menu_mobile.style.height != '100vh' && window.innerWidth < 770){
+                    menu_mobile.style.height = '100vh';
+                    menu_mobile.style.left = '0';
+                } else{
+                    menu_mobile.style.height = 0;
+                    menu_mobile.style.left = '-10000';
+                }
+
+            }
+            $(document).ready(function() {
+                var maxHeight = -1;
+                $('.servico').each(function() {
+                    maxHeight = maxHeight > $(this).height() ? maxHeight : $(this).height();
+                });
+
+                $('.servico').each(function() {
+                    $(this).height(maxHeight);
+                });
+             });
+        </script>
+    </body>
+</html>

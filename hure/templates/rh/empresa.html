@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div id="dados-empresa" class="col-12 float-left">
+        <div class="col-12 float-left">
+            <h5 class="text-center">Dados da empresa</h5>
+            <form method="post">
+                <div class="campo-form col-12 col-md-7 float-left">
+                    <span>Nome fantasia:</span>
+                    <input readonly id="nome_fantasia" placeholder="Nome Fantasia" type="text" name="nome_fantasia" value="{{empresa[0]['nome']}}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-5 float-left">
+                    <span>CNPJ:</span>
+                    <input readonly value="{{empresa[0]['cnpj']}}" id="cnpj" placeholder="00.000.000/0000-00" type="text" name="cnpj" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-9 col-md-3 float-left">
+                    <span>Cidade sede:</span>
+                    <select disabled type="text" id="sede" name="cidade" placeholder="Pirassununga" class="col-12 form-control dado_empresa form-control-md float-left">
+                        <option id="cidade" value="{{empresa[0]['endereco']['cidade']}}">{{empresa[0]['endereco']['cidade']}}</option>
+                    </select>
+                </div>
+                <div class="campo-form col-3 col-md-1 float-left">
+                    <span>UF:</span>
+                    <select disabled placeholder="UF" id="uf" onchange="buscaCidades(this.value)" type="text" name="uf_sede" class="form-control dado_empresa form-control-md">
+                        <option {% if empresa[0]['endereco']['estado'] == 'AC' %}selected{% endif %} value="AC">AC</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'AL' %}selected{% endif %} value="AL">AL</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'AP' %}selected{% endif %} value="AP">AP</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'AM' %}selected{% endif %} value="AM">AM</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'BA' %}selected{% endif %} value="BA">BA</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'CE' %}selected{% endif %} value="CE">CE</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'DF' %}selected{% endif %} value="DF">DF</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'ES' %}selected{% endif %} value="ES">ES</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'GO' %}selected{% endif %} value="GO">GO</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'MA' %}selected{% endif %} value="MA">MA</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'MT' %}selected{% endif %} value="MT">MT</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'MS' %}selected{% endif %} value="MS">MS</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'MG' %}selected{% endif %} value="MG">MG</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'PA' %}selected{% endif %} value="PA">PA</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'PB' %}selected{% endif %} value="PB">PB</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'PR' %}selected{% endif %} value="PR">PR</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'PE' %}selected{% endif %} value="PE">PR</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'PI' %}selected{% endif %} value="PI">PI</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'RJ' %}selected{% endif %} value="RJ">RJ</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'RN' %}selected{% endif %} value="RN">RN</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'RS' %}selected{% endif %} value="RS">RS</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'RO' %}selected{% endif %} value="RO">RO</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'RR' %}selected{% endif %} value="RR">RR</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'SC' %}selected{% endif %} value="SC">SC</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'SP' %}selected{% endif %} value="SP">SP</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'SE' %}selected{% endif %} value="SE">SE</option>
+                                <option {% if empresa[0]['endereco']['estado'] == 'TO' %}selected{% endif %} value="TO">TO</option>
+                    </select>
+                </div>
+                <div class="campo-form col-12 col-md-5 float-left">
+                    <span>Endereço:</span>
+                    <input readonly id="rua" placeholder="Rua Vinícius de Oliveira, 1206" type="text" value="{{empresa[0]['endereco']['rua']}}" name="rua" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-3 float-left">
+                    <span>Bairro:</span>
+                    <input readonly id="bairro" placeholder="Centro" type="text" name="bairro" value="{{empresa[0]['endereco']['bairro']}}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-4 float-left">
+                    <span>Área de atuação:</span>
+                    <input readonly placeholder="Indústria" id="atuacao" type="text" name="atuacao" value="{% if empresa[0]['atuacao'] is not none %}{{empresa[0]['atuacao']}}{% endif %}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-4 float-left">
+                    <span>Tamanho da empresa:</span>
+                    <select disabled id="tamanho" placeholder="Tamanho da empresa" type="text" name="tamanho" value="{% if empresa[0]['atuacao'] is not none %}{{empresa[0]['atuacao']}}{% endif %}" class="form-control dado_empresa form-control-md">
+                        <option {% if empresa[0]['tamanho'] == 1 %}selected{% endif %} value="1">1 - 20 funcionários</option>
+                        <option {% if empresa[0]['tamanho'] == 2 %}selected{% endif %} value="2">21 - 100 funcionários</option>
+                        <option {% if empresa[0]['tamanho'] == 3 %}selected{% endif %} value="3">101 - 999 funcionários</option>
+                        <option {% if empresa[0]['tamanho'] == 4 %}selected{% endif %} value="4">1000+ funcionários</option>
+                    </select>
+                </div>
+                <div class="campo-form col-12 col-md-4 float-left">
+                    <span>data de fundação:</span>
+                    <input readonly placeholder="12/06/1998" type="date" max="" id="fundacao" name="fundacao" value="{% if empresa[0]['fundacao'] is not none %}{{empresa[0]['fundacao']}}{% endif %}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-4 float-left">
+                    <span>telefone:</span>
+                    <input readonly id="telefone" placeholder="(19) 0000-0000" type="tel" name="telefone" value="{% if empresa[0]['contato']['telefone'] is not none %}{{empresa[0]['contato']['telefone']}}{% endif %}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-4 float-left">
+                    <span>e-mail:</span>
+                    <input readonly id="email" placeholder="rh@noxp.com.br" type="email" name="email" value="{% if empresa[0]['contato']['email'] is not none %}{{empresa[0]['contato']['email']}}{% endif %}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-4 float-left">
+                    <span>site:</span>
+                    <input readonly id="site" placeholder="noxp.com.br" type="text" name="site" value="{% if empresa[0]['contato']['site'] is not none %}{{empresa[0]['contato']['site']}}{% endif %}" class="form-control dado_empresa form-control-md">
+                </div>
+                <div class="campo-form col-12 col-md-12 float-left">
+                    <span>Descrição:</span>
+                    <textarea readonly id="descricao" rows="8" placeholder="Conte a história da sua empresa, descreva o momento atual, missão, visão e valores e o porque os candidatos vão amar trabalhar aqui!" type="text" name="descricao" class="form-control dado_empresa form-control-md">{% if empresa[0]['descricao'] is not none %}{{empresa[0]['descricao']}}{% endif %}</textarea>
+                </div>
+                <div class="campo-form col-12 col-md-12 float-left">
+                    <button type="button" id="edita" onclick="editar()" class="btn btn-info btn-block">Editar</button>
+                    <button type="submit" style="display:none;" id="envia" class="btn btn-success btn-block">Salvar!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="{{url_for('static', filename='misc.js')}}"></script>
+    <script>
+     function buscaCidades(e){
+        document.querySelector("#sede").innerHTML = '';
+        var cidade_select = document.querySelector("#sede");
+
+        var num_estados = json_cidades.estados.length;
+        var j_index = -1;
+
+        // aqui eu pego o index do Estado dentro do JSON
+        for(var x=0;x<num_estados;x++){
+           if(json_cidades.estados[x].sigla == e){
+              j_index = x;
+           }
+        }
+
+        if(j_index != -1){
+
+           // aqui eu percorro todas as cidades e crio os OPTIONS
+           json_cidades.estados[j_index].cidades.forEach(function(cidade){
+              var cid_opts = document.createElement('option');
+              cid_opts.setAttribute('value',cidade)
+              cid_opts.innerHTML = cidade;
+              cidade_select.appendChild(cid_opts);
+           });
+        }else{
+           document.querySelector("#sede").innerHTML = '';
+        }
+     }
+     (function(){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+         if(dd<10){
+                dd='0'+dd
+            }
+            if(mm<10){
+                mm='0'+mm
+            }
+
+        today = yyyy+'-'+mm+'-'+dd;
+        document.getElementById("fundacao").setAttribute("max", today);
+        })()
+
+        function editar(){
+            /*
+            document.getElementById('nome_fantasia').readOnly = false;
+            document.getElementById('cnpj').readOnly = false;
+            document.getElementById('sede').disabled = false;
+            document.getElementById('uf').disabled = false;
+            document.getElementById('rua').readOnly = false;
+            document.getElementById('bairro').readOnly = false;
+            document.getElementById('atuacao').readOnly = false;
+            document.getElementById('fundacao').readOnly = false;
+            */
+            document.getElementById('sede').disabled = false;
+            document.getElementById('uf').disabled = false;
+            document.getElementById('tamanho').disabled = false;
+            document.getElementById('telefone').readOnly = false;
+            document.getElementById('email').readOnly = false;
+            document.getElementById('site').readOnly = false;
+            document.getElementById('descricao').readOnly = false;
+            document.getElementById('edita').style.display = 'none';
+            document.getElementById('envia').style.display = 'block';
+        }
+        $(document).ready(function(){
+          // Adicionamos o evento onclick ao botão com o ID "pesquisar"
+          $('#cnpj').focusout(function(e) {
+
+            // Apesar do botão estar com o type="button", é prudente chamar essa função para evitar algum comportamento indesejado
+            e.preventDefault();
+
+            // Aqui recuperamos o cnpj preenchido do campo e usamos uma expressão regular para limpar da string tudo aquilo que for diferente de números
+            var cnpj = $('#cnpj').val().replace(/[^0-9]/g, '');
+
+            // Fazemos uma verificação simples do cnpj confirmando se ele tem 14 caracteres
+            if(cnpj.length == 14) {
+
+              // Aqui rodamos o ajax para a url da API concatenando o número do CNPJ na url
+              $.ajax({
+                url:'https://www.receitaws.com.br/v1/cnpj/' + cnpj,
+                method:'GET',
+                dataType: 'jsonp', // Em requisições AJAX para outro domínio é necessário usar o formato "jsonp" que é o único aceito pelos navegadores por questão de segurança
+                complete: function(xhr){
+
+                  // Aqui recuperamos o json retornado
+                  response = xhr.responseJSON;
+
+                  // Na documentação desta API tem esse campo status que retorna "OK" caso a consulta tenha sido efetuada com sucesso
+                  if(response.status == 'OK') {
+
+                    // Agora preenchemos os campos com os valores retornados
+                    $('#nome_fantasia').val(response.nome);
+                    $('#cidade').val(response.municipio);
+                    $('#rua').val(response.logradouro + ', ' + response.numero);
+                    $('#uf').val(response.uf);
+                    $('#bairro').val(response.bairro);
+                    $('#telefone').val(response.telefone);
+                    dia = response.abertura.split('/')[0];
+                    mes = response.abertura.split('/')[1];
+                    ano = response.abertura.split('/')[2];
+                    data = ano + '-' + ("0"+mes).slice(-2) + '-' + ("0"+dia).slice(-2);
+                    $('#fundacao').val(data);
+
+                  // Aqui exibimos uma mensagem caso tenha ocorrido algum erro
+                  } else {
+                    alert(response.message); // Neste caso estamos imprimindo a mensagem que a própria API retorna
+                  }
+                }
+              });
+
+            // Tratativa para caso o CNPJ não tenha 14 caracteres
+            } else {
+              alert('CNPJ inválido');
+            }
+          });
+        });
+    </script>
+{% endblock %}

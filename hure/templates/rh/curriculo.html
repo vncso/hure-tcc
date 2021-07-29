@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div id="curriculo" class="col-12 float-left">
+        <div id="dados_curriculo" class="col-12 col-md-9 float-left">
+            <div class="secao-vw-curriculo col-12 float-left">
+                <div id="cabecalho-curriculo" class="col-12 float-left">
+                    <div id="foto-curriculo" class="col-12 col-md-3 float-left">
+                        <img src="http://127.0.0.1:5000/static/imgs/{{candidato['foto']}}" alt="" height="125" width="125">
+                    </div>
+                    <div id="dados-curriculo" class="col-12 col-md-9 float-left">
+                        <h4>{{candidato['nome']}} {{candidato['sobrenome']}}</h4>
+                        <h5>{{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}}</h5>
+                        <h6>{{candidato['datanasc']}}</h6>
+                    </div>
+                    <div class="modal fade" id="mapa-curriculo" tabindex="-1" role="dialog" aria-labelledby="mapa-curriculo-t" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="container-fluid">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h5>Possível rota do candidato para a empresa:</h5>
+                                    </div>
+                                </div>
+                                <div class="modal-body">
+                                    {{mapa|safe}}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="corpo-curriculo" class="col-12 float-left">
+                <div class="secao-vw-curriculo col-12 float-left">
+                    <h5 class="titulo-secao-vw-curriculo">Informações básicas e contatos:</h5>
+                    <div class="curso-curriculo">
+                        <div class="info-curso-curriculo">
+                            <h6>{{candidato['endereco']['rua']}}, {{candidato['endereco']['numero']}}, {{candidato['endereco']['bairro']}} - {{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}} ({{candidato['endereco']['cep']}})</h6>
+                            <h6>{{candidato['email']}} | <i class="fab fa-facebook-square"></i>  <i class="fab fa-linkedin"></i>  <i class="fas fa-globe"></i>  <i class="fab fa-skype"></i></h6>
+                            <h6>{{candidato['contato']['tel1']}} | {{candidato['contato']['tel2']}} | {{candidato['contato']['tel3']}}</h6>
+                            <h6>{{candidato['contato']['site']}}</h6>
+                            <button class="btn btn-md btn-outline-info" data-toggle="modal" data-target="#mapa-curriculo">Visualizar mapa</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="secao-vw-curriculo col-12 float-left">
+                    <h5 class="titulo-secao-vw-curriculo">Educação e Cursos:</h5>
+                    {% for curso in candidato['cursos'] %}
+                        <div class="curso-curriculo">
+                            <div class="info-curso-curriculo">
+                                <h5 class="text-left">{{curso['nome']}}</h5>
+                                <h6>{{curso['instituicao']}}</h6>
+                                <h6>de: {{curso['inicio']}} até: {{curso['fim']}}</h6>
+                            </div>
+                            <p>
+                                {{curso['descricao']}}
+                            </p>
+                        </div>
+                    {%endfor%}
+                </div>
+                <div class="secao-vw-curriculo col-12 float-left">
+                    <h5 class="titulo-secao-vw-curriculo">Experiências profisisonais:</h5>
+                    {% for xp in candidato['experiencias'] %}
+                        <div class="curso-curriculo text-left">
+                            <div class="info-curso-curriculo text-left">
+                                <h5 class="text-left">{{xp['cargo']}}</h5>
+                                <h6>{{xp['empresa']}}</h6>
+                                <h6>de: {{xp['inicio']}} até: {{xp['fim']}}</h6>
+                            </div>
+                            <p>
+                                {{xp['descricao']}}
+                            </p>
+                        </div>
+                    {%endfor%}
+                </div>
+            </div>
+        </div>
+        <div id="opt_curriculo" class="col-12 col-md-3 float-left">
+            <div id="menu-curriculo" class="col-12 float-left">
+                {% if candidato['anotacoes']|length > 0 and anotacoes > 0 %}
+                    <span>esse currículo possui anotações: </span><button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#ver-anotacoes">Ver Anotações</button>
+                    <div class="modal fade" id="ver-anotacoes" tabindex="-1" role="dialog" aria-labelledby="ver-anotacoes" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="container-fluid">
+                                        <button type="button" class="close" data-dismiss="modal" data-target="#ver-anotacoes" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h5>Anotações feita neste currículo:</h5>
+                                    </div>
+                                </div>
+                                <div class="modal-body">
+                                    {% for anotacao in candidato['anotacoes'] %}
+                                        {% if anotacao['empresa'] == empresa %}
+                                            <form method="post" action="{{url_for('rh.del_anotacao_curriculo')}}">
+                                                <div class="col-12 float-left campo-form">
+                                                    <span>{{anotacao['tipo']}}:</span>
+                                                    {{anotacao['anotacao']}} | <button type="submit" class="btn btn-danger btn-sm">deletar</button>
+                                                    <input type="hidden" value="{{candidato['_id']}}" name="candidato">
+                                                    <input type="hidden" value="{{anotacao['_id']}}" name="id_anotacao">
+                                                </div>
+                                            </form>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="modal-footer float-left col-12">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-12 float-left">
+                    <button class="btn btn-outline-dark btn-block" data-toggle="modal" data-target="#add-anotacao">Adicionar Anotação</button>
+                </div>
+                <div class="col-12 float-left">
+                    <button class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#dir-vaga">Direcionar para vaga</button>
+                </div>
+                <div class="col-12 float-left">
+                    <button class="btn btn-outline-info btn-block">Enviar mensagem</button>
+                </div>
+                <div class="col-12 float-left">
+                    <button class="btn btn-outline-danger btn-block">Excluir currículo do BT</button>
+                </div>
+                <div class="modal fade" id="add-anotacao" tabindex="-1" role="dialog" aria-labelledby="add-anotacao" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="container-fluid">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5>Adicionar uma anotação a esse currículo:</h5>
+                                </div>
+                            </div>
+                            <form action="{{url_for('rh.add_anotacao_curriculo')}}" method="post">
+                                <div class="modal-body">
+                                    <div class="col-10 float-left campo-form">
+                                        <div class="col-12 float-left campo-form">
+                                            <span>tipo:</span>
+                                            <select name="tipo" class="form-control form-control-md col-12">
+                                                <option>Tipo anotacao</option>
+                                                <option value="indicacao">Indicação</option>
+                                                <option value="setores">Setores recomendados</option>
+                                                <option value="entrevista">Entrevista</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 float-left campo-form">
+                                            <span>anotação:</span>
+                                            <textarea required name="anotacao" class="col-12 form-control form-control-lg" placeholder="Anotação."></textarea>
+                                        </div>
+                                        <input type="hidden" name="candidato" value="{{candidato['_id']}}">
+                                    </div>
+                                </div>
+                                <div class="modal-footer float-left col-12">
+                                    <div class="col-md-6 col-sm-12 float-left">
+                                        <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Fechar</button>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 float-right">
+                                        <button type="submit" class="btn btn-success float-right">Salvar anotação</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="dir-vaga" tabindex="-1" role="dialog" aria-labelledby="dir-vaga" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="container-fluid">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5>Adicionar candidato ao processo seletivo de uma vaga</h5>
+                                </div>
+                            </div>
+                            <form action="{{url_for('rh.aprova_candidato')}}" method="post">
+                                <div class="modal-body">
+                                    <div class="col-10 float-left campo-form">
+                                        <div class="col-12 float-left campo-form">
+                                            <span>Vaga:</span>
+                                            <select name="vaga" class="form-control form-control-md col-12" required>
+                                                {% for vaga in vagas %}
+                                                    {% if vaga['publicada'] != 2 and vaga['publicada'] != 3 %}
+                                                        <option value="{{vaga['_id']}}">{{vaga['cargo']}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <input type="hidden" name="candidato" value="{{candidato['_id']}}">
+                                        <input type="hidden" name="nome_candidato" value="{{candidato['nome']}}">
+                                        <input type="hidden" name="origem" value="curriculo">
+                                    </div>
+                                </div>
+                                <div class="modal-footer float-left col-12">
+                                    <div class="col-md-6 col-sm-12 float-left">
+                                        <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Fechar</button>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 float-right">
+                                        <button type="submit" class="btn btn-success float-right">Incluir no processo seletivo</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
