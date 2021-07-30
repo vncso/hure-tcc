@@ -1,0 +1,182 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- estilos personalizados -->
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos.css')}}">
+        <script type="text/javascript" src="{{url_for('static', filename='script.css')}}"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- Fonts e ícones -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8c452e77e4.js" crossorigin="anonymous"></script>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest')}}">
+
+    </head>
+    <body>
+        <header onload="mudaBanner()" class="col-12 float-left">
+            <div id="menu" class="col-12 fixed-top float-left">
+                <ul>
+                    <div class="col-3 col-md-8 float-left">
+                        <span id="logo"  onclick="mostra_menu()" class="item_menu">HuRe</span>
+                        <li class="item_menu"><a href="{{url_for('index')}}">Início</a></li>
+                        <li class="item_menu"><a href="{{url_for('servicos')}}">Serviços</a></li>
+                        <li class="item_menu"><a href="{{url_for('sobre')}}">Sobre</a></li>
+                        <li class="item_menu">Contato</li>
+                    </div>
+                    <div id="auth_menu" class="col-9 col-md-4 float-right">
+                        <div class="col-7 col-md-6 float-right">
+                            <a href="{{url_for('person.register')}}"><li id="cadastro_btn" class="col-12">Cadastrar</li></a>
+                        </div>
+                        <div class="col-5 col-md-6 float-right">
+                            <div class="dropdown">
+                                <li id="login_btn" class="col-12" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="float-left">Login</li>
+                                <div class="dropdown-menu" style="width: 300px;" aria-labelledby="dropdownMenu2">
+                                    <form id="login_dropdown" method="post" class="dropdown">
+                                        <div id="obgt_empresa">
+                                            <h6>Empresa</h6>
+                                            <div class="login_form">
+                                                <span>Cod. Empresa:</span>
+                                                <input type="number" class="form-control form-control-md" name="empresa" placeholder="0000">
+                                            </div>
+                                            <div id="obgt_candidato">
+                                                <h6>Candidato</h6>
+                                                <div class="login_form">
+                                                    <span>Usuário:</span>
+                                                    <input required type="text" size="30" class="form-control form-control-md" name="usuario" placeholder="user@hure.com.br">
+                                                </div>
+                                                <div class="login_form">
+                                                    <span>Senha:</span>
+                                                    <input required type="password" class="form-control form-control-md" name="senha" placeholder="********">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="login_form">
+                                            <button type="submit" class="acessar_btn col-12">Acessar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+                <div id="menu_mobile" class="col-12 float-left">
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Início</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Serviços</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Sobre</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Contato</li>
+                    </div>
+                </div>
+            </div>
+            <div id="txt_header" class="col-12 col-md-5 float-left">
+                <h3>O que é o <span>HuRe</span>?</h3>
+                <p>
+                    É uma plataforma de Gestão de Banco de Talentos criada como projeto de TCC do aluno Vinícius de Oliveira
+                    do curso Bacharelado em Engenharia de Software da Unicesumar. A ideia do projeto é criar uma plataforma
+                    online que elimine os problemas que muitas empresas enfrentam no departamento de RH, tais como currículos
+                    acumulados e sem controle, processos seletivos ineficientes e mais.
+                    Conheça abaixo um pouco da história por trás deste projeto.
+                </p>
+            </div>
+            <div id="img_header" class="col-12 col-md-7 float-left">
+                <img src="{{url_for('static', filename='imgs/bg-screen.jpeg')}}">
+            </div>
+        </header>
+        <main id="main" class="col-12 float-left">
+            <div class="col-12">
+                <h4 style="font-family: 'Jost'">Como tudo começou?</h4>
+                <p>Em 2018, estava caminhando rumo a minha primeira experiência profissional como participante do programa
+                "Jovem Aprendiz" do SENAI. Tive a oportunidade de trabalhar no setor de RH de uma indústria na cidade de
+                Pirassununga/SP onde pude conhecer todos os processos desse setor e ter uma visão geral de como a empresa
+                funcionava.</p>
+                <p>A tarefa que mais desempenhei nessa empresa foi auxiliar nos processos seletivos, e foi quando precisei
+                separar e classificar uma pilha com cerca de 4000 currículos que tive a ideia de transformar isso em uma
+                plataforma digital.</p>
+                <p>O tempo passou, o contrato como Aprendiz acabou e no final não consegui dar sequência no projeto.
+                 Até que novamente me deparei com a mesma situação na empresa onde trabalho atualmente. Ao buscar currículos
+                para profissionais de T.I para uma vaga aberta em nosso setor, a responsável pelo Recrutamento informou as
+                dificuldades em encontrar os candidatos, já que os currículos estavam em pilhas de papel, em arquivos (gavetas) e
+                 praticamente sem condição de ser realizada uma busca eficiente entre tantos papéis.</p>
+                <p>
+                    Vendo essa situação novamente, aproveitei e iniciei o meu projeto de TCC me baseando em resolver esse
+                    problema que ocorre em várias empresas. Com isso nasce o projeto HuRe.
+                </p>
+                <h4 style="font-family: 'Jost'">Mas afinal de contas, o que é HuRe?</h4>
+                <p>O nome "HuRe" é um trocadilho com a palavra "hire" (em inglês siginifica "contratar") e ao mesmo tempo é uma
+                abreviação de "Human Resources" (RH).</p>
+                <p>A plataforma do HuRe é um sistema para gestão de banco de talentos e currículos, além de ter a possibilidade
+                de publicar, editar e acompanhar vagas de emprego abertas.</p>
+                <p>Possui duas frentes principais, o HuRe para empresas, onde organizações podem gerenciar tudo que envolve
+                os currículos, candidatos e vagas. E também existe o HuRe para candidatos, onde os candidatos podem encontrar
+                vagas de emprego, enviar seus currículos para as empresas e participar dos processos realizados através
+                do HuRe.</p>
+                <h4 style="font-family: 'Jost'">Próximos passos</h4>
+                <p>Após a entrega do projeto de TCC, pretendo evoluir o projeto e torná-lo viável como uma start-up que
+                auxilia empresas a contratar mais e melhor.</p>
+            </div>
+        </main>
+        <footer class="col-12 float-left">
+            <div id="logo_footer" class="col-12 col-md-3 float-left">
+                <div class="container col-12 float-left">
+                    <span>HuRe</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left">
+                <div id="links_uteis" class="container col-12 float-left">
+                    <span>Links úteis</span>
+                    <ul class="col-12 float-left">
+                        <li>Sobre o HuRe</li>
+                        <li>Privacidade e dados pessoais (LGPD)</li>
+                        <li>Nossos clientes</li>
+                        <li>entre em contato</li>
+                        <li>Carreiras</li>
+                        <li>NoXP</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+        <script type="text/javascript">
+            function mostra_menu(){
+                menu_mobile = document.getElementById('menu_mobile');
+
+                if(menu_mobile.style.height != '100vh' && window.innerWidth < 770){
+                    menu_mobile.style.height = '100vh';
+                    menu_mobile.style.left = '0';
+                } else{
+                    menu_mobile.style.height = 0;
+                    menu_mobile.style.left = '-10000';
+                }
+
+            }
+            $(document).ready(function() {
+                var maxHeight = -1;
+                $('.servico').each(function() {
+                    maxHeight = maxHeight > $(this).height() ? maxHeight : $(this).height();
+                });
+
+                $('.servico').each(function() {
+                    $(this).height(maxHeight);
+                });
+             });
+        </script>
+    </body>
+</html>

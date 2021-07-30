@@ -1,0 +1,76 @@
+#candidatos{
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1%;
+}
+#candidatos h5{
+    font-family: 'Jost';
+    text-align: center;
+}
+#conteudo-busca{
+    border-top: 1px solid #eee;
+    padding-top: 2%;
+}
+.candidato-box{
+    margin-bottom: 2%;
+}
+.candidato{
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 3%;
+}
+.candidato img{
+    margin: auto;
+    border-radius: 100%;
+}
+.secao-vw-curriculo{
+    border: 1px solid #eee;
+    padding: 1%;
+    border-radius: 8px;
+    margin-bottom: 2%;
+}
+.curso-curriculo{
+    text-align: left;
+    padding: 1%;
+    margin-bottom: 6%;
+    border-right: 1px solid deepskyblue;
+    border-left: 1px solid deepskyblue;
+}
+.info-curso-curriculo h5{
+    font-family: 'Jost';
+    text-align: left;
+    font-size: 1.2em;
+}
+.titulo-secao-vw-curriculo{
+    font-family: 'Jost';
+    text-align: center;
+}
+/*rh.curriculo*/
+#curriculo{
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1%;
+}
+#opt_curriculo{
+    padding: 0;
+    border-left: 1px solid #eee;
+}
+#menu-curriculo{
+    padding: 0;
+}
+#dados-curriculo{
+    font-family: 'Jost';
+    text-align: left;
+}
+#corpo-curriculo{
+    padding:0;
+}
+@media screen and (min-width: 770px) {
+    .curso-curriculo{
+        text-align: left;
+        padding: 1%;
+        margin-bottom: 3%;
+        border-right: 1px solid deepskyblue;
+        border-left: 1px solid deepskyblue;
+    }
+}

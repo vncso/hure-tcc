@@ -1,0 +1,234 @@
+{% extends 'base.html'%}
+
+{% block conteudo%}
+    <div id="candidatos" class="col-12 float-left">
+        <h5>candidaturas para a vaga <a data-toggle="modal" data-target="#vaga{{vaga[0]['_id']}}">"{{vaga[0]['cargo']}}"</a></h5>
+        <div class="modal fade" id="vaga{{vaga[0]['_id']}}" tabindex="-1" role="dialog" aria-labelledby="vaga{{vaga[0]['_id']}}Cargo" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="container-fluid">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div id="logo">
+                                HuRe
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="vaga" class="col-12">
+                            <div class="col-12">
+                                <h3>{{vaga[0]['cargo']}}</h3>
+                                <h5>empresa | {{vaga[0]['localizacao']['cidade']}}/{{vaga[0]['localizacao']['estado']}}</h5>
+                                <h6>Salário: R${{vaga[0]['salario']}}</h6>
+                                <p>publicada em: {{vaga[0]['publicacao'].strftime('%d/%m/%Y')}} | prazo: {{prazo}}</p>
+                            </div>
+                            <div class="col-12">
+                                <h4>Sobre a empresa:</h4>
+                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, laboriosam a. Sequi deserunt, id, nobis impedit eos nisi dolores odio aperiam voluptas commodi magnam explicabo iure doloribus iste! Hic, est!
+                                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt eos enim in, excepturi beatae hic harum asperiores totam sint quia tenetur, tempore incidunt aspernatur, ratione placeat? Inventore eligendi saepe possimus.
+                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Exercitationem, officia voluptates autem totam eius reprehenderit. Nulla veritatis obcaecati numquam? Ullam minus alias ab magni impedit iusto inventore quod exercitationem sint.
+                            </div>
+                            <div class="col-12">
+                                <h4>Sobre essa vaga</h4>
+                                <p>
+                                    {{vaga[0]['descricao']}}
+                                </p>
+                            </div>
+                            <div class="col-12">
+                                <h4>Requisitos:</h4>
+                                <ul>
+                                    {% for requisito in vaga[0]['requisitos']%}
+                                        <li>{{requisito}}</li>
+                                    {% endfor %}
+                                </ul>
+                                <h4>Benefícios:</h4>
+                                <ul>
+                                    {% for beneficio in vaga[0]['beneficios']%}
+                                        <li>{{beneficio}}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <div class="col-sm-12 float-left">
+                                    <a href="{{url_for('vagas.vaga', empresa=session['empresa'], idvaga=vaga[0]['_id'])}}" target="_blank" class="btn btn-outline-success btn-block">Abrir página da vaga</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="col-12 float-left">
+            <div class="col-12 float-left campo-form">
+                <form id="form-busca">
+                    <span><i class="fas fa-search"></i> buscar: </span>
+                    <input id="busca_cand" type="text" name="busca_cand" class="col-12 form-control form-control-md" placeholder="insira o termo para busca">
+                    <input type="hidden" name="vaga_id" value="{{vaga[0]['_id']}}">
+                </form>
+            </div>
+            <div id="conteudo-busca" class="col-12 float-left">
+                {%for candidato in candidatos %}
+                    <div class="col-12 col-md-4 col-xl-3 candidato-box float-left">
+                        <div class="col-12 candidato text-center">
+                            <img src="https://hure-vncso.herokuapp.com/static/imgs/{{candidato['foto']}}" height="100" width="100">
+                            <h5>{{candidato['nome']}} {{candidato['sobrenome']}}</h5>
+                            <p>{{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}}</p>
+                            <div style='margin-bottom: 9%'>
+                                <button class="btn btn-outline-info btn-block btn-card" data-toggle="modal" data-target="#curriculo{{candidato['_id']}}">Ver Currículo</button>
+                            </div>
+                            <form method="post" action="{{url_for('rh.aprova_candidato')}}">
+                                <input type="hidden" name="candidato" value="{{candidato['_id']}}">
+                                <input type="hidden" name="vaga" value="{{vaga[0]['_id']}}">
+                                <input type="hidden" name="nome_candidato" value="{{candidato['nome']}}">
+                                <input type="hidden" name="origem" value="processo">
+                                <input type="hidden" name="data" value="{%if candidato['candidaturas']['id'] == vaga[0]['_id']%}{{candidato['candidaturas']['data']}}{%endif%}">
+                                <button type="submit" class="btn btn-outline-success btn-block btn-card">Aprovar</button>
+                            </form>
+                            <form method="post" action="{{url_for('rh.reprova_candidato')}}">
+                                <input type="hidden" name="candidato" value="{{candidato['_id']}}">
+                                <input type="hidden" name="vaga" value="{{vaga[0]['_id']}}">
+                                <input type="hidden" name="origem" value="processo">
+                                <input type="hidden" name="nome_candidato" value="{{candidato['nome']}}">
+                                <button type="submit" class="btn btn-outline-danger btn-block btn-card">Reprovar</button>
+                            </form>
+                        </div>
+                        <div class="modal fade" id="curriculo{{candidato['_id']}}" tabindex="-1" role="dialog" aria-labelledby="curriculo{{candidato['_id']}}Nome" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="container-fluid">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <div class="col-12">
+                                                <div class="col-md-2 col-sm-12 foto-curriculo float-left">
+                                                    <img src="http://127.0.0.1:5000/static/imgs/{{candidato['foto']}}" height="100" width="100">
+                                                </div>
+                                                <div class="col-md-10 col-sm-12 dados-candidato float-left">
+                                                    <h5 class="modal-title col-12 float-left text-left" id="curriculo{{candidato['_id']}}Nome">
+                                                        {{candidato['nome']}} {{candidato['sobrenome']}}
+                                                    </h5>
+                                                    <br/>
+                                                    <h6 class="col-12 float-left text-left">
+                                                        {{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h5 class="titulo-secao-vw-curriculo">Informações básicas e contatos:</h5>
+                                            <div class="curso-curriculo">
+                                                <div class="info-curso-curriculo">
+                                                    <h6>{{candidato['endereco']['rua']}}, {{candidato['endereco']['numero']}}, {{candidato['endereco']['bairro']}} - {{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}} ({{candidato['endereco']['cep']}})</h6>
+                                                    <h6>{{candidato['email']}} | <i class="fab fa-facebook-square"></i>  <i class="fab fa-linkedin"></i>  <i class="fas fa-globe"></i>  <i class="fab fa-skype"></i></h6>
+                                                    <h6>{{candidato['contato']['tel1']}} | {{candidato['contato']['tel2']}} | {{candidato['contato']['tel3']}}</h6>
+                                                    <h6></h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h5 class="titulo-secao-vw-curriculo">Educação e Cursos:</h5>
+                                            {% for curso in candidato['cursos'] %}
+                                                <div class="curso-curriculo">
+                                                    <div class="info-curso-curriculo">
+                                                        <h5 class="text-left">{{curso['nome']}}</h5>
+                                                        <h6>{{curso['instituicao']}}</h6>
+                                                        <h6>de: {{curso['inicio']}} até: {{curso['fim']}}</h6>
+                                                    </div>
+                                                    <p>
+                                                        {{curso['descricao']}}
+                                                    </p>
+                                                </div>
+                                            {%endfor%}
+                                        </div>
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h5 class="titulo-secao-vw-curriculo">Experiências profisisonais:</h5>
+                                            {% for xp in candidato['experiencias'] %}
+                                                <div class="curso-curriculo text-left">
+                                                    <div class="info-curso-curriculo text-left">
+                                                        <h5 class="text-left">{{xp['cargo']}}</h5>
+                                                        <h6>{{xp['empresa']}}</h6>
+                                                        <h6>de: {{xp['inicio']}} até: {{xp['fim']}}</h6>
+                                                    </div>
+                                                    <p>
+                                                        {{xp['descricao']}}
+                                                    </p>
+                                                </div>
+                                            {%endfor%}
+                                        </div>
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h4>Respostas ao questionário da vaga:</h4>
+                                            {% for candidatura in candidato['candidaturas'] %}
+                                                {% if candidatura['id'] == idvaga %}
+                                                    {% for resposta in candidatura['respostas'] %}
+                                                        {% if resposta['pgt'] is not none %}
+                                                            <div class="curso-curriculo">
+                                                                <div class="info-curso-curriculo">
+                                                                    <h5 class="text-left">{{resposta['pgt']}}) {{resposta['pergunta']}}</h5>
+                                                                </div>
+                                                                <p>
+                                                                   R: {{resposta['resposta']}}
+                                                                </p>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+
+                                        <div class="col-md-4 col-sm-12 float-left">
+                                            <a href="#" class="btn btn-outline-success btn-block">Adicionar Anotação</a>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 float-left">
+                                            <a href="#" class="btn btn-outline-danger btn-block">Excluir do BT</a>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 float-left">
+                                            <a href="{{url_for('rh.curriculo', candidato=candidato['_id'])}}" class="btn btn-outline-dark btn-block">Visualizar no BT</a>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $('#busca_cand').keyup(function(){
+                var busca = $('#busca_cand').val();
+                $.ajax({
+                    url: '{{url_for('rh.get_candidatos_proc', empresa=session['empresa'], idvaga=vaga[0]['_id'])}}',
+                    data: $('#form-busca').serialize(),
+                    type: 'POST',
+                    success: function(response){
+                        console.log(response);
+                        $('#conteudo-busca').html(response);
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

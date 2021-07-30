@@ -1,0 +1,132 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- estilos personalizados -->
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos_base.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos-painel.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos-vaga.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos-candidatos.css')}}">
+        <script type="text/javascript" src="{{url_for('static', filename='script.css')}}"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- Fonts e ícones -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8c452e77e4.js" crossorigin="anonymous"></script>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest')}}">
+
+    </head>
+    <body>
+        <header id="header" class="sidebar fixed-top col-12 col-md-2 float-left">
+            <span id="logo" onclick="mostra_menu()" class="col-12 text-center">HuRe</span>
+            <div id="sessao_usuario" class="col-12 float-left">
+                <span class="float-left">Olá, Vinícius</span>
+                <a href="{{url_for('auth.logout')}}" class="btn btn-outline-danger btn-sm float-right">sair</a>
+            </div>
+            <ul id="menu_sidebar" class="float-left col-12">
+                <a href="{{url_for('person.curriculo')}}"><li class="menu_sidebar_item col-12"><i class="fas fa-file-alt"></i> Meu currículo (início)</li></a>
+                <a href="{{url_for('person.candidaturas')}}"><li class="menu_sidebar_item col-12"><i class="fas fa-history"></i> Minhas Candidaturas</li></a>
+                <li class="menu_sidebar_item col-12"><i class="fas fa-thumbs-up"></i> Sobre o <span>HuRe</span></li>
+                <li class="menu_sidebar_item col-12"><i class="fas fa-sliders-h"></i> Configurações</li>
+                <li class="menu_sidebar_item col-12"><i class="fas fa-lock"></i> Privacidade</li>
+            </ul>
+            <div id="menu_mobile" class="float-left col-12">
+                <div id="sessao_usuario_mobile" class="col-12 float-left">
+                    <span class="float-left">Olá, Vinícius</span>
+                    <a href="{{url_for('auth.logout')}}" class="btn btn-outline-danger btn-sm float-right">sair</a>
+                </div>
+                <ul id="menu_itens_mobile" class="float-left col-12">
+                    <a href="{{url_for('person.curriculo')}}"><li class="menu_sidebar_item col-12"><i class="fas fa-file-alt"></i> Meu currículo (início)</li></a>
+                    <a href="{{url_for('person.candidaturas')}}"><li class="menu_sidebar_item col-12"><i class="fas fa-history"></i> Minhas Candidaturas</li></a>
+                    <li class="menu_sidebar_item col-12"><i class="fas fa-thumbs-up"></i> Sobre o <span>HuRe</span></li>
+                    <li class="menu_sidebar_item col-12"><i class="fas fa-sliders-h"></i> Configurações</li>
+                    <li class="menu_sidebar_item col-12"><i class="fas fa-lock"></i> Privacidade</li>
+                </ul>
+            </div>
+        </header>
+        <main class="col-12 col-md-10 float-right">
+            {% block conteudo %}
+            {% endblock %}
+        </main>
+        <script>
+            function mostra_menu(){
+                menu_mobile = document.getElementById('menu_mobile');
+
+                if(menu_mobile.style.height != '100vh' && window.innerWidth < 770){
+                    menu_mobile.style.height = '100vh';
+                    menu_mobile.style.display = 'block';
+                } else{
+                    menu_mobile.style.height = '0vh';
+                    menu_mobile.style.display = 'none';
+                }
+
+            }
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            function converte_data(valor, idcampo){
+                document.getElementById(idcampo).value = valor;
+            };
+            function expande(secao){
+                if(secao == 'dados'){
+                    secao = document.getElementById('dados');
+                    btn = document.getElementById('btn-expande-dados');
+                    tamanho = 1175;
+                 }
+                if(secao.clientHeight < 160){
+                    secao.style.height = tamanho;
+                    btn.innerHTML = '<i class="fas fa-angle-double-up"></i>   Ocultar   <i class="fas fa-angle-double-up"></i>';
+                }else{
+                    secao.style.height = '150px';
+                    secao.style.overflowY = 'hide';
+                    btn.innerHTML = '<i class="fas fa-angle-double-down"></i>   Expandir   <i class="fas fa-angle-double-down"></i>';
+                }
+            };
+
+            $(document).ready(function(){
+		        $("#cpf").mask("999.999.999-99");
+        	});
+
+            /*$('#form-dados').submit(function (e) {
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr('action'), // url to post to, from the forms action
+                    data: $(this).serialize(),
+
+                    success: function (data) {
+                        console.log(data)
+                        alert('atualizado')
+                    }
+
+                })
+                e.preventDefault(); // block the traditional submission of the form. form_cursos
+            });*/
+            $('#form_cursos').submit(function (e) {
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr('action'), // url to post to, from the forms action
+                    data: $(this).serialize(),
+
+                    success: function (data) {
+                        console.log(data)
+                        alert('curso adicionado')
+                    }
+                })
+                e.preventDefault(); // block the traditional submission of the form.
+            });
+
+        </script>
+    </body>
+</html>

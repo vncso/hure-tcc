@@ -1,0 +1,357 @@
+{% extends 'base-candidato.html' %}
+    {%block conteudo %}
+            <div id="curriculo" class="col-12 float-left">
+                <form enctype=multipart/form-data method="post" id="form-dados" action="{{url_for('person.atualiza_curriculo')}}">
+                    <div id="info-curriculo" class="col-12 col-md-3 float-right">
+                        <div class="col-12 info-curriculo-box float-left">
+                            <p>
+                                Completar seu currículo é muito importante
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Completar currículo</div>
+                        </div>
+                        <div class="col-6 col-md-12 info-curriculo-box float-left">
+                            <p>
+                                Comece a se candidatar para as vagas de emprego no HuRe. Seja encontrado pelas empresas!
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Encontre vagas!</div>
+                        </div>
+                        <div class="col-6 col-md-12 info-curriculo-box float-left">
+                            <img src="https://image.flaticon.com/icons/png/512/1256/1256648.png" width="100" height="100">
+                            <p>
+                                Dicas para ir bem em uma entrevista
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Saiba mais!</div>
+                        </div>
+                    </div>
+                    <div id="dados" class="col-12 col-md-9 secao-curriculo float-left">
+                        <div class="col-12 sub-secao-curriculo float-left">
+                            <div class="col-12 float-left titulo-campo-form">
+                                <h5>Dados Pessoais</h5>
+                            </div>
+                            <div class="col-12 col-md-5 float-left campo-form">
+                                <label>Nome:</label>
+                                <input type="text" name="nome" value="{{user['nome']}}" placeholder="Nome" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label>Sobrenome:</label>
+                                <input type="text" value="{{user['sobrenome']}}" name="sobrenome" placeholder="Sobrenome" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label>data de nascimento:</label>
+                                <input type="date" value="{{user['datanasc']}}" id="datanasc" name="datanasc" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label>CPF:</label>
+                                <input type="text" value="{{user['cpf']}}" id="cpf" name="cpf" placeholder="000.000.000-00" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label>Gênero:</label>
+                                <select name="genero" class="col-12 form-control form-control-md">
+                                    <option {% if user['genero'] == 'M'%} selected {% endif %} value="M">Masculino</option>
+                                    <option {% if user['genero'] == 'F'%} selected {% endif %} value="F">Feminino</option>
+                                    <option {% if user['genero'] == 'N'%} selected {% endif %} value="N">Prefiro não responder</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label>Etnia:</label>
+                                <select name="etnia" class="col-12 form-control form-control-md">
+                                    <option {% if user['etnia'] == 'amarela'%} selected {% endif %} value="amarela">Amarela</option>
+                                    <option {% if user['etnia'] == 'branca'%} selected {% endif %} value="branca">Branca</option>
+                                    <option {% if user['etnia'] == 'indigena'%} selected {% endif %} value="indigena">Indígena</option>
+                                    <option {% if user['etnia'] == 'parda'%} selected {% endif %} value="parda">Parda</option>
+                                    <option {% if user['etnia'] == 'preta'%} selected {% endif %} value="preta">Preta</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 sub-secao-curriculo float-left">
+                            <div class="col-12 float-left titulo-campo-form">
+                                <h5>PCDs e preferências</h5>
+                            </div>
+                            <div class="col-12 col-md-2 float-left campo-form">
+                                <label><i class="fas fa-wheelchair"></i> PCD?</label>
+                                <select name="pcd" class="col-12 form-control form-control-md">
+                                    <option {% if user['pcd']['sn'] == 'SIM' %} selected {% endif %} value="0">NÃO</option>
+                                    <option {% if user['pcd']['sn'] == 'NÃO' %} selected {% endif %} value="1">SIM</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-6 float-left campo-form">
+                                <label>Necessidades especiais:</label>
+                                <input type="text" value="{{user['pcd']['detalhes']}}" name="pcd_detalhes" placeholder="Se sim, qual sua necessidade especial?" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-6 float-left campo-form">
+                                <label>Outras observações</label>
+                                <input type="text" value="{{user['pcd']['outros']}}" name="pcd_outros" placeholder="outras observações ou preferências?" class="form-control form-control-md col-12">
+                            </div>
+                        </div>
+                        <div class="col-12 sub-secao-curriculo float-left">
+                            <div class="col-12 float-left titulo-campo-form">
+                                <h5>endereço</h5>
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label>CEP:</label>
+                                <input type="text" value="{{user['endereco']['cep']}}" name="cep" placeholder="CEP" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-6 float-left campo-form">
+                                <label>Rua:</label>
+                                <input type="text" value="{{user['endereco']['rua']}}" name="rua" placeholder="rua" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-2 float-left campo-form">
+                                <label>N°:</label>
+                                <input type="number" value="{{user['endereco']['numero']}}" name="numero" placeholder="N°" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label>Bairro:</label>
+                                <input type="text" value="{{user['endereco']['bairro']}}" name="bairro" placeholder="Bairro" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label>Cidade:</label>
+                                <input type="text" value="{{user['endereco']['cidade']}}" name="cidade" placeholder="Cidade" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label>Estado:</label>
+                                <select id="estado" name="estado" class="col-12 form-control form-control-md campo-vaga">
+                                    <option {% if user['endereco']['estado'] == 'AC' %}selected{% endif %} value="AC">Acre</option>
+                                    <option {% if user['endereco']['estado'] == 'AL' %}selected{% endif %} value="AL">Alagoas</option>
+                                    <option {% if user['endereco']['estado'] == 'AP' %}selected{% endif %} value="AP">Amapá</option>
+                                    <option {% if user['endereco']['estado'] == 'AM' %}selected{% endif %} value="AM">Amazonas</option>
+                                    <option {% if user['endereco']['estado'] == 'BA' %}selected{% endif %} value="BA">Bahia</option>
+                                    <option {% if user['endereco']['estado'] == 'CE' %}selected{% endif %} value="CE">Ceará</option>
+                                    <option {% if user['endereco']['estado'] == 'DF' %}selected{% endif %} value="DF">Distrito Federal</option>
+                                    <option {% if user['endereco']['estado'] == 'ES' %}selected{% endif %} value="ES">Espírito Santo</option>
+                                    <option {% if user['endereco']['estado'] == 'GO' %}selected{% endif %} value="GO">Goiás</option>
+                                    <option {% if user['endereco']['estado'] == 'MA' %}selected{% endif %} value="MA">Maranhão</option>
+                                    <option {% if user['endereco']['estado'] == 'MT' %}selected{% endif %} value="MT">Mato Grosso</option>
+                                    <option {% if user['endereco']['estado'] == 'MS' %}selected{% endif %} value="MS">Mato Grosso do Sul</option>
+                                    <option {% if user['endereco']['estado'] == 'MG' %}selected{% endif %} value="MG">Minas Gerais</option>
+                                    <option {% if user['endereco']['estado'] == 'PA' %}selected{% endif %} value="PA">Pará</option>
+                                    <option {% if user['endereco']['estado'] == 'PB' %}selected{% endif %} value="PB">Paraíba</option>
+                                    <option {% if user['endereco']['estado'] == 'PR' %}selected{% endif %} value="PR">Paraná</option>
+                                    <option {% if user['endereco']['estado'] == 'PE' %}selected{% endif %} value="PE">Pernambuco</option>
+                                    <option {% if user['endereco']['estado'] == 'PI' %}selected{% endif %} value="PI">Piauí</option>
+                                    <option {% if user['endereco']['estado'] == 'RJ' %}selected{% endif %} value="RJ">Rio de Janeiro</option>
+                                    <option {% if user['endereco']['estado'] == 'RN' %}selected{% endif %} value="RN">Rio Grande do Norte</option>
+                                    <option {% if user['endereco']['estado'] == 'RS' %}selected{% endif %} value="RS">Rio Grande do Sul</option>
+                                    <option {% if user['endereco']['estado'] == 'RO' %}selected{% endif %} value="RO">Rondônia</option>
+                                    <option {% if user['endereco']['estado'] == 'RR' %}selected{% endif %} value="RR">Roraima</option>
+                                    <option {% if user['endereco']['estado'] == 'SC' %}selected{% endif %} value="SC">Santa Catarina</option>
+                                    <option {% if user['endereco']['estado'] == 'SP' %}selected{% endif %} value="SP">São Paulo</option>
+                                    <option {% if user['endereco']['estado'] == 'SE' %}selected{% endif %} value="SE">Sergipe</option>
+                                    <option {% if user['endereco']['estado'] == 'TO' %}selected{% endif %} value="TO">Tocantins</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 sub-secao-curriculo float-left">
+                            <div class="col-12 float-left titulo-campo-form">
+                                <h5>Contatos</h5>
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label><i class="fab fa-whatsapp"></i> Telefone 1:</label>
+                                <input type="text" value="{{user['contato']['tel1']}}" name="tel1" placeholder="telefone 1" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label><i class="fas fa-phone"></i> Telefone 2:</label>
+                                <input type="text" value="{{user['contato']['tel2']}}" name="tel2" placeholder="telefone 2" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-4 float-left campo-form">
+                                <label><i class="fas fa-phone"></i> Telefone 3:</label>
+                                <input type="text" value="{{user['contato']['tel3']}}" name="tel3" placeholder="telefone 3" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 float-left campo-form">
+                                <label><i class="fas fa-envelope"></i> E-mail:</label>
+                                <input type="text" value="{{user['email']}}" name="user_email" placeholder="email@email.com.br" class="form-control form-control-md col-12 col-md-6">
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label><i class="fab fa-facebook-square"></i> Facebook:</label>
+                                <input type="text" value="{{user['contato']['facebook']}}" name="facebook" placeholder="Facebook" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label><i class="fab fa-linkedin"></i> LinkedIn:</label>
+                                <input type="text" value="{{user['contato']['linkedin']}}" name="linkedin" placeholder="LinkedIn" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label><i class="fas fa-globe"></i> Site:</label>
+                                <input type="text" value="{{user['contato']['site']}}" name="site" placeholder="site pessoal" class="form-control form-control-md col-12">
+                            </div>
+                            <div class="col-12 col-md-3 float-left campo-form">
+                                <label><i class="fab fa-skype"></i> Skype:</label>
+                                <input type="text" value="{{user['contato']['skype']}}" name="skype" placeholder="Skype" class="form-control form-control-md col-12">
+                            </div>
+                        </div>
+                        <input type="hidden" name="id_user" value="{{user['_id']}}">
+                        <input type="submit" class="btn btn-outline-success btn-block" value="Salvar alterações">
+                    </div>
+                </form>
+                <div class="float-left">
+                    <div id="info-cursos" class="col-12 col-md-3 float-right">
+                        <div class="col-12 info-curriculo-box float-left">
+                            <p>
+                                Completar seu currículo é muito importante
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Completar currículo</div>
+                        </div>
+                        <div class="col-6 col-md-12 info-curriculo-box float-left">
+                            <p>
+                                Comece a se candidatar para as vagas de emprego no HuRe. Seja encontrado pelas empresas!
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Encontre vagas!</div>
+                        </div>
+                        <div class="col-6 col-md-12 info-curriculo-box float-left">
+                            <img src="https://image.flaticon.com/icons/png/512/1256/1256648.png" width="100" height="100">
+                            <p>
+                                Dicas para ir bem em uma entrevista
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Saiba mais!</div>
+                        </div>
+                    </div>
+                    <div id="cursos" class="col-12 col-md-9 secao-curriculo float-left">
+                        <div class="col-12 float-left titulo-campo-form">
+                            <h5>Educação e cursos</h5>
+                        </div>
+                        {% for curso in user['cursos'] %}
+                            <div class="curso-curriculo">
+                                <div class="info-curso-curriculo">
+                                    <h5 class="text-left">{{curso['nome']}}</h5>
+                                    <h6>{{curso['instituicao']}}</h6>
+                                    <h6>de: {{curso['inicio']}} até: {{curso['fim']}}</h6>
+                                </div>
+                                <p>
+                                    {{curso['descricao']}}
+                                </p>
+                            </div>
+                         {% endfor %}
+                        <div class="col-12 text-center float-left campo-form">
+                            <div class="btn btn-outline-secondary btn-md" data-toggle="modal" data-target="#addCurso">Adicionar novo curso</div>
+                        </div>
+                        <div class="modal fade" id="addCurso" tabindex="-1" role="dialog" aria-labelledby="addCursoTitle" aria-hidden="true">
+                            <form id="form_cursos" action="{{url_for('person.add_curso')}}">
+                                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addCursoTitle">Novo Curso</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="col-10 float-left campo-form">
+                                                <input required type="text" name="curso" placeholder="Nome do curso" class="form-control form-control-md col-12">
+                                            </div>
+                                            <div class="col-12 float-left campo-form">
+                                                <input required type="text" name="instituicao" placeholder="Onde fez esse curso?" class="form-control form-control-md col-7">
+                                            </div>
+                                            <div class="col-4 float-left campo-form">
+                                                <span>Início</span>
+                                                <input required type="date" onchange="converte_data(this.value, 'datainicurso')" name="ini" placeholder="inicio" class="form-control form-control-md col-12">
+                                                <input type="hidden" name="datainicurso" id="datainicurso">
+                                            </div>
+                                            <div class="col-4 float-left campo-form">
+                                                <span>Fim</span>
+                                                <input type="date" onchange="converte_data(this.value, 'datafimcurso')" name="fim" placeholder="fim" class="form-control form-control-md col-12">
+                                                <input type="hidden" name="datafimcurso" id="datafimcurso">
+                                            </div>
+                                            <div class="col-12 float-left campo-form">
+                                                <textarea required name="descri_curso" class="col-12 form-control form-control-lg" placeholder="Descreva brevemente o curso e os conhecimentos que adquiriu durante os estudos"></textarea>
+                                            </div>
+                                            <input type="hidden" name="id_user" value="{{user['_id']}}">
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                            <button type="submit" class="btn btn-primary">Adicionar Curso</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-left">
+                    <div id="info-xp" class="col-12 col-md-3 float-right">
+                        <div class="col-12 info-curriculo-box float-left">
+                            <p>
+                                Completar seu currículo é muito importante
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Completar currículo</div>
+                        </div>
+                        <div class="col-6 col-md-12 info-curriculo-box float-left">
+                            <p>
+                                Comece a se candidatar para as vagas de emprego no HuRe. Seja encontrado pelas empresas!
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Encontre vagas!</div>
+                        </div>
+                        <div class="col-6 col-md-12 info-curriculo-box float-left">
+                            <img src="https://image.flaticon.com/icons/png/512/1256/1256648.png" width="100" height="100">
+                            <p>
+                                Dicas para ir bem em uma entrevista
+                            </p>
+                            <div class="btn btn-outline-success btn-block">Saiba mais!</div>
+                        </div>
+                    </div>
+                    <div id="experiencias" class="col-12 col-md-9 secao-curriculo float-left">
+                        <div class="col-12 float-left titulo-campo-form">
+                            <h5>Experiências profissionais</h5>
+                        </div>
+                         {% for xp in user['experiencias'] %}
+                            <div class="curso-curriculo text-left">
+                                <div class="info-curso-curriculo text-left">
+                                    <h5 class="text-left">{{xp['cargo']}}</h5>
+                                    <h6>{{xp['empresa']}}</h6>
+                                    <h6>de: {{xp['inicio']}} até: {{xp['fim']}}</h6>
+                                </div>
+                                <p>
+                                    {{xp['descricao']}}
+                                </p>
+                            </div>
+                         {% endfor %}
+                         <div class="col-12 text-center float-left campo-form">
+                             <div class="btn btn-outline-secondary btn-md" data-toggle="modal" data-target="#addExperiencia">Adicionar nova Experiência</div>
+                         </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="addExperiencia" tabindex="-1" role="dialog" aria-labelledby="addExperienciaTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                <form method="post" action="{{url_for('person.add_experiencia')}}">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addExperienciaTitle">Nova Experiência</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="col-10 float-left campo-form">
+                                                <input required type="text" name="cargo" placeholder="Cargo ou função" class="form-control form-control-md col-12">
+                                            </div>
+                                            <div class="col-12 float-left campo-form">
+                                                <input required type="text" name="empresa" placeholder="Empresa" class="form-control form-control-md col-7">
+                                            </div>
+                                            <div class="col-4 float-left campo-form">
+                                                <span>Início</span>
+                                                <input required type="date" onchange="converte_data(this.value, 'datainixp')" name="inixp" placeholder="inicio" class="form-control form-control-md col-12">
+                                                <input type="hidden" name="datainixp" id="datainixp">
+                                            </div>
+                                            <div class="col-4 float-left campo-form">
+                                                <span>Fim</span>
+                                                <input type="date" onchange="converte_data(this.value, 'datafimxp')" name="fimxp" placeholder="fim" class="form-control form-control-md col-12">
+                                                <input type="hidden" name="datafimxp" id="datafimxp">
+                                            </div>
+                                            <div class="col-12 float-left campo-form">
+                                                <textarea required name="descri_cargo" class="col-12 form-control form-control-lg" placeholder="Descreva suas principais atividades e realizações na empresa"></textarea>
+                                            </div>
+                                            <input type="hidden" name="id_user" value="{{user['_id']}}">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                            <button type="submit" class="btn btn-primary">Adicionar Experiência</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 campo-form text-center float-left">
+                    <div id="btn-expande-experiencias" class="btn btn-outline-info btn-sm" onclick="expande('experiencias')"><i class="fas fa-angle-double-down"></i>   Expandir   <i class="fas fa-angle-double-down"></i></div>
+                </div>
+            </div>
+    {% endblock %}

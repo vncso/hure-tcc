@@ -1,0 +1,226 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- estilos personalizados -->
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos.css')}}">
+        <script type="text/javascript" src="{{url_for('static', filename='script.css')}}"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- Fonts e ícones -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8c452e77e4.js" crossorigin="anonymous"></script>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest')}}">
+
+    </head>
+    <body>
+        <header onload="mudaBanner()" class="col-12 float-left">
+            <div id="menu" class="col-12 fixed-top float-left">
+                <ul>
+                    <div class="col-3 col-md-8 float-left">
+                        <span id="logo"  onclick="mostra_menu()" class="item_menu">HuRe</span>
+                        <li class="item_menu"><a href="{{url_for('index')}}">Início</a></li>
+                        <li class="item_menu"><a href="{{url_for('servicos')}}">Serviços</a></li>
+                        <li class="item_menu"><a href="{{url_for('sobre')}}">Sobre</a></li>
+                        <li class="item_menu">Contato</li>
+                    </div>
+                    <div id="auth_menu" class="col-9 col-md-4 float-right">
+                        <div class="col-7 col-md-6 float-right">
+                            <a href="{{url_for('person.register')}}"><li id="cadastro_btn" class="col-12">Cadastrar</li></a>
+                        </div>
+                        <div class="col-5 col-md-6 float-right">
+                            <div class="dropdown">
+                                <li id="login_btn" class="col-12" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="float-left">Login</li>
+                                <div class="dropdown-menu" style="width: 300px;" aria-labelledby="dropdownMenu2">
+                                    <form id="login_dropdown" method="post" class="dropdown">
+                                        <div id="obgt_empresa">
+                                            <h6>Empresa</h6>
+                                            <div class="login_form">
+                                                <span>Cod. Empresa:</span>
+                                                <input type="number" class="form-control form-control-md" name="empresa" placeholder="0000">
+                                            </div>
+                                            <div id="obgt_candidato">
+                                                <h6>Candidato</h6>
+                                                <div class="login_form">
+                                                    <span>Usuário:</span>
+                                                    <input required type="text" size="30" class="form-control form-control-md" name="usuario" placeholder="user@hure.com.br">
+                                                </div>
+                                                <div class="login_form">
+                                                    <span>Senha:</span>
+                                                    <input required type="password" class="form-control form-control-md" name="senha" placeholder="********">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="login_form">
+                                            <button type="submit" class="acessar_btn col-12">Acessar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+                <div id="menu_mobile" class="col-12 float-left">
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Início</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Serviços</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Sobre</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Contato</li>
+                    </div>
+                </div>
+            </div>
+            <div id="txt_header" class="col-12 col-md-5 float-left">
+                <h3>Gerencie seu Banco de Talentos</h3>
+                <p>
+                    Facilite a gestão dos currículos que sua empresa recebe. Tenha um banco de talentos inteligente, publique vagas de emprego e torne o seu RH mais eficiente utilizando uma ferramenta totalmente digital.
+                </p>
+                <a href="{{url_for('servicos')}}"><button class="btn_conheca">CONHEÇA O <span>HuRe</span></button></a>
+            </div>
+            <div id="img_header" class="col-12 col-md-7 float-left">
+                <img src="{{url_for('static', filename='imgs/bg_1.jpeg')}}">
+            </div>
+        </header>
+        <main id="main" class="col-12 float-left">
+            <div id="auth_main" class="col-12 float-left">
+                <h4>Feito para unir empresas e candidatos, facilitando o processo de recrutamento e seleção para todas as partes</h4>
+                <div class="col-12 col-md-6 float-left">
+                    <div class="col-12 div_auth_main">
+                        <h5>para Empresas</h5>
+                        <a href="{{url_for('auth.login')}}" class="btn btn-success btn-block">Acessar HuRe para empresas</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 float-left">
+                    <div class="col-12 div_auth_main">
+                        <h5>para Candidatos</h5>
+                        <a href="{{url_for('person.login')}}" class="btn btn-success btn-block">Acessar HuRe para candidatos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left servico">
+                <div class="text-center info_circulo">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="col-12 descri_servico">
+                    <h5>Abra vagas e acompanhe os processos</h5>
+                    <p>Vincule o <span>HuRe</span> a página "trabalhe conosco" do seu site e dê mais visibilidade as oportunidades em sua empresa!</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left servico">
+                <div class="text-center info_circulo">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="col-12 descri_servico">
+                    <h5>Encontre o candidato ideal</h5>
+                    <p>Chega de procurar o candidato ideal para sua vaga entre centenas ou milhares de currículos.</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left servico">
+                <div class="text-center info_circulo">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="col-12 descri_servico">
+                    <h5>Controle todo o processo seletivo</h5>
+                    <p>Saiba o status, e acompanhe o andamento do processo a medida em que o candidato vai passando pelas etapas</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left servico">
+                <div class="text-center info_circulo">
+                    <i class="far fa-clock"></i>
+                </div>
+                <div class="col-12 descri_servico">
+                    <h5>Economize tempo e recursos</h5>
+                    <p>Crie um processo abrindo uma vaga, aprovando candidatos, agendando entrevistas e iniciando a admissão em poucos cliques.</p>
+                </div>
+            </div>
+            <div id="img_contato_index" class="col-12 col-md-5 float-left">
+                <img src="{{url_for('static', filename='imgs/bg_2.jpeg')}}" height="400" width="100%">
+            </div>
+            <div id="contato_index" class="col-12 col-md-7 float-left">
+                <h5 class="text-center">Fale com a gente e saiba como o <span>HuRe</span> pode te ajudar!</h5>
+                <form>
+                    <div class="login_form">
+                        <span>Nome completo:</span>
+                        <input required type="text" class="form-control form-control-md" placeholder="Vinícius de Oliveira">
+                    </div>
+                    <div class="login_form">
+                        <span>e-mail:</span>
+                        <input required type="email" class="form-control form-control-md" placeholder="vini@hure.com.br">
+                    </div>
+                    <div class="login_form">
+                        <span>telefone/celular:</span>
+                        <input required type="tel" class="form-control form-control-md" placeholder="(19) 9 9999-9999">
+                    </div>
+                    <div class="login_form">
+                        <span>Mensagem:</span>
+                        <textarea rows="4" placeholder="Quero melhorar meu processo seletivo com o HuRe!" class="form-control form-control-md"></textarea>
+                    </div>
+                    <div class="login_form">
+                        <button class="btn btn-success btn-block">Enviar mensagem!</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <footer class="col-12 float-left">
+            <div id="logo_footer" class="col-12 col-md-3 float-left">
+                <div class="container col-12 float-left">
+                    <span>HuRe</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left">
+                <div id="links_uteis" class="container col-12 float-left">
+                    <span>Links úteis</span>
+                    <ul class="col-12 float-left">
+                        <li>Sobre o HuRe</li>
+                        <li>Privacidade e dados pessoais (LGPD)</li>
+                        <li>Nossos clientes</li>
+                        <li>entre em contato</li>
+                        <li>Carreiras</li>
+                        <li>NoXP</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+        <script type="text/javascript">
+            function mostra_menu(){
+                menu_mobile = document.getElementById('menu_mobile');
+
+                if(menu_mobile.style.height != '100vh' && window.innerWidth < 770){
+                    menu_mobile.style.height = '100vh';
+                    menu_mobile.style.left = '0';
+                } else{
+                    menu_mobile.style.height = 0;
+                    menu_mobile.style.left = '-10000';
+                }
+
+            }
+            $(document).ready(function() {
+                var maxHeight = -1;
+                $('.servico').each(function() {
+                    maxHeight = maxHeight > $(this).height() ? maxHeight : $(this).height();
+                });
+
+                $('.servico').each(function() {
+                    $(this).height(maxHeight);
+                });
+             });
+        </script>
+    </body>
+</html>

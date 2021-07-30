@@ -1,0 +1,586 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- estilos personalizados -->
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='estilos-auth-register.css')}}">
+        <script type="text/javascript" src="{{url_for('static', filename='script.css')}}"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- Fonts e ícones -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8c452e77e4.js" crossorigin="anonymous"></script>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest')}}">
+
+    </head>
+    <body onscroll="mudaMenu()">
+        <header onload="mudaBanner()" class="col-12 float-left">
+            <div id="menu" class="col-12 fixed-top float-left">
+                <ul>
+                    <div class="col-3 col-md-8 float-left">
+                        <span id="logo"  onclick="mostra_menu()" class="item_menu">HuRe</span>
+                        <li class="item_menu">Início</li>
+                        <li class="item_menu">Serviços</li>
+                        <li class="item_menu">Sobre</li>
+                        <li class="item_menu">Contato</li>
+                    </div>
+                    <div id="auth_menu" class="col-9 col-md-4 float-right">
+                        <div class="col-7 col-md-6 float-right">
+                            <li id="cadastro_btn" class="col-12">Cadastrar</li>
+                        </div>
+                        <div class="col-5 col-md-6 float-right">
+                            <div class="dropdown">
+                                <li id="login_btn" class="col-12" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="float-left">Login</li>
+                                <div class="dropdown-menu" style="width: 300px;" aria-labelledby="dropdownMenu2">
+                                    <form method="post" class="dropdown">
+                                        <div class="login_form">
+                                            <span>Cod. Empresa:</span>
+                                            <input required type="number" class="form-control form-control-md" name="empresa" placeholder="0000">
+                                        </div>
+                                        <div class="login_form">
+                                            <span>Usuário:</span>
+                                            <input required type="text" size="30" class="form-control form-control-md" name="usuario" placeholder="user@hure.com.br">
+                                        </div>
+                                        <div class="login_form">
+                                            <span>Senha:</span>
+                                            <input required type="password" class="form-control form-control-md" name="senha" placeholder="********">
+                                        </div>
+                                        <div class="login_form">
+                                            <button type="submit" class="acessar_btn col-12">Acessar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+                <div id="menu_mobile" class="col-12 float-left">
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Início</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Serviços</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Sobre</li>
+                    </div>
+                    <div class="container float-left col-6 item_mm">
+                        <li class="item_menu_mobile">Contato</li>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main id="main" class="col-12 float-left">
+            <div class="col-12">
+                <h5 class="text-center" style="font-family: 'Jost'; margin-bottom: 4%;">Crie uma conta e aproveite ao máximo os recursos do HuRe</h5>
+            </div>
+            <div id="etapa1" class="col-12 col-md-10">
+                <div id="empresa-etapa1" class="col-12 col-md-5 float-left card-etapa1">
+                    <div class="col-12 float-left">
+                        <h4 class="float-left col-12">Empresas</h4>
+                        <p class="float-left col-12">Com a conta para empresas você pode gerenciar seu Banco de Talentos, publicar vagas e
+                            ter o controle do seu processo seletivo de maneira fácil e intuitiva.
+                        </p>
+                    </div>
+                    <div class="col-12 float-left" style="margin-bottom: 4%;">
+                        <button class="btn btn-outline-success btn-block float-left" data-toggle="modal" data-target="#empresaContato">Fale conosco!</button>
+                    </div>
+                    <div class="col-12 float-left text-left">
+                        <a href="{{url_for('index')}}" class="btn btn-outline-info btn-block">Saiba mais!</a>
+                    </div>
+                </div>
+                <!-- MODAL CONTATO EMPRESA -->
+                <div class="modal fade" id="empresaContato" tabindex="-1" role="dialog" aria-labelledby="empresaContato" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="container-fluid">
+                                    <button type="button" class="close" data-dismiss="modal" data-target="#empresaContato" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5 style="font-family: 'Jost'">O HuRe pode melhorar seu RH</h5>
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <p>Obrigado pelo interesse no HuRe. Acreditamos que podemos ajudar a tornar
+                                o seu processo de recrutamento e seleção mais simples com a nossa plataforma
+                                e estamos aqui para te ajudar com isso.</p>
+                                <p>Queremos muito conhecer as suas necessidades e apresentar o HuRe para todas
+                                as empresas que querem contratar com mais facilidade e acabar com os problemas
+                                que a falta de um Banco de Talentos pode causar.</p>
+                                <br/><br/>
+                                <h6>Nos conte mais sobre a sua empresa</h6>
+                                <p>Solicite uma demonstração, ou uma proposta para que possa conhecer o HuRe e todas
+                                as vantagens que ele pode trazer para sua empresa:</p>
+                                <span><i class="far fa-envelope"></i> <strong>empresas@hure.com.br</strong></span>
+                                <br/>
+                                <span><i class="fab fa-whatsapp"></i> <strong>(19) 9 9918-2722</strong></span>
+                            </div>
+                            <div class="modal-footer float-left col-12">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="div-etapa1" class="col-12 col-md-2 float-left text-center">
+                    HuRe
+                </div>
+                <div id="candidato-etapa1" class="col-12 col-md-5 float-left card-etapa1">
+                    <div class="col-12 float-left">
+                        <h4>Candidatos</h4>
+                        <p>Crie sua conta como candidato e envie seu currículo para todas as empresas que
+                        utilizam o HuRe para administrar seu Banco de Talentos.</p>
+                    </div>
+                    <div class="col-12 float-left" style="margin-bottom: 4%;">
+                        <button class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#candidatoCadastro">Cadastre-se!</button>
+                    </div>
+                    <div class="col-12 float-left text-left">
+                        <span class="text-left">Já tem uma conta?</span>
+                        <a href="{{url_for('person.login')}}" class="btn btn-outline-info btn-block">Faça o login!</a>
+                    </div>
+                </div>
+                <div class="modal fade" id="candidatoCadastro" tabindex="-1" role="dialog" aria-labelledby="candidatoCadastro" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="container-fluid">
+                                    <button type="button" class="close" data-dismiss="modal" data-target="#candidatoCadastro" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h5 style="font-family: 'Jost'">Crie sua conta!</h5>
+                                    <span>campos sublinhados são de preenchimento obrigatório.</span>
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" id="form-register">
+                                    <div id="cad1" class="col-12">
+                                        <h5>Informações básicas:</h5>
+                                        <p>Queremos te conhecer! ;)</p>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span style="text-decoration: underline;">Nome:</span>
+                                            <input required name="nome" type="text" class="form-control form-control-md" placeholder="Vinícius">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span style="text-decoration: underline;">Sobrenome:</span>
+                                            <input required name="sobrenome" type="text" class="form-control form-control-md" placeholder="Oliveira">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>Genêro:</span>
+                                            <select name="genero" class="form-control form-control-md col-12">
+                                                <option value="F">Feminino</option>
+                                                <option value="M">Masculino</option>
+                                                <option selected value="N">Prefiro não responder</option>
+                                            </select>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-3 float-left">
+                                            <span style="text-decoration: underline;">data de nascimento:</span>
+                                            <input required type="date" value="" min="1901-01-01" id="datanasc" name="datanasc" class="form-control form-control-md col-12">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-9 float-left">
+                                            <span style="text-decoration: underline;">e-mail:</span>
+                                            <input required id="email" name="email" type="email" class="form-control form-control-md" placeholder="vini@hure.com.br">
+                                            <span id="email_verifica"></span>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span style="text-decoration: underline;">Senha:</span>
+                                            <input required name="senha" id="senha" type="password" class="form-control form-control-md" placeholder="*********">
+                                            <ol class="text-left">
+                                                <li id="senha_tamanho">6+ caracteres</li>
+                                                <li id="senha_nums">número</li>
+                                                <li id="senha_minus">letra minúscula</li>
+                                                <li id="senha_maius">letra maiúscula</li>
+                                            </ol>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span style="text-decoration: underline;">Confirmar senha:</span>
+                                            <input required disabled onkeyup="verifica_senha()" name="conf_senha" id="conf_senha" type="password" class="form-control form-control-md" placeholder="*********">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span>Conheça nossos termos de uso</span>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button id="etp2" disabled onclick="iretapa2()" type="button" class="btn btn-success btn-block">Continuar</button>
+                                        </div>
+                                    </div>
+                                    <div id="cad2" class="col-12">
+                                        <h5>Endereço e contatos:</h5>
+                                        <p>As empresas usarão essas informações para poder entrar em contato com você.</p>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>CEP:</span>
+                                            <input name="cep" type="text" class="form-control form-control-md" placeholder="00.000-000">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-10 float-left">
+                                            <span style="text-decoration: underline;">Rua:</span>
+                                            <input required name="rua" type="text" class="form-control form-control-md" placeholder="Avenida Brasil">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-2 float-left">
+                                            <span style="text-decoration: underline;">Nº:</span>
+                                            <input required name="numero" type="number" class="form-control form-control-md" placeholder="1206">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span style="text-decoration: underline;">Bairro:</span>
+                                            <input required name="bairro" type="text" class="form-control form-control-md" placeholder="Centro">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span style="text-decoration: underline;">Cidade:</span>
+                                            <select required type="text" id="cidade" name="cidade" class="col-12 form-control form-control-md float-left"></select>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span style="text-decoration: underline;">Estado:</span>
+                                            <select required id="estado" onchange="buscaCidades(this.value)" name="estado" class="col-12 form-control form-control-md float-left campo-form">
+                                                <option value="AC">Acre</option>
+                                                <option value="AL">Alagoas</option>
+                                                <option value="AP">Amapá</option>
+                                                <option value="AM">Amazonas</option>
+                                                <option value="BA">Bahia</option>
+                                                <option value="CE">Ceará</option>
+                                                <option value="DF">Distrito Federal</option>
+                                                <option value="ES">Espírito Santo</option>
+                                                <option value="GO">Goiás</option>
+                                                <option value="MA">Maranhão</option>
+                                                <option value="MT">Mato Grosso</option>
+                                                <option value="MS">Mato Grosso do Sul</option>
+                                                <option value="MG">Minas Gerais</option>
+                                                <option value="PA">Pará</option>
+                                                <option value="PB">Paraíba</option>
+                                                <option value="PR">Paraná</option>
+                                                <option value="PE">Pernambuco</option>
+                                                <option value="PI">Piauí</option>
+                                                <option value="RJ">Rio de Janeiro</option>
+                                                <option value="RN">Rio Grande do Norte</option>
+                                                <option value="RS">Rio Grande do Sul</option>
+                                                <option value="RO">Rondônia</option>
+                                                <option value="RR">Roraima</option>
+                                                <option value="SC">Santa Catarina</option>
+                                                <option value="SP">São Paulo</option>
+                                                <option value="SE">Sergipe</option>
+                                                <option value="TO">Tocantins</option>
+                                            </select>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span style="text-decoration: underline;">telefone principal:</span>
+                                            <input required type="tel" id="telefone" name="telefone" placeholder="19 9 9999-9999" class="col-12 form-control form-control-md float-left">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>telefone recados:</span>
+                                            <input type="tel" id="telefone2" name="telefone2" placeholder="19 9 8888-8888" class="col-12 form-control form-control-md float-left">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>Linked In:</span>
+                                            <input type="text" id="linkedin" name="linkedin" placeholder="username" class="col-12 form-control form-control-md float-left">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button id="etp1" onclick="voltaretapa1()" type="button" class="btn btn-dark btn-block">Voltar</button>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button id="etp3" onclick="iretapa3()" type="button" class="btn btn-success btn-block">Continuar</button>
+                                        </div>
+                                    </div>
+                                    <div id="cad3" class="col-12">
+                                        <h5>Cursos e educação</h5>
+                                        <p>Adicione agora seu curso mais recente, ou preencha mais tarde em seu perfil!</p>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span>Curso:</span>
+                                            <input name="curso" type="text" class="form-control form-control-md" placeholder="Engenharia de Software">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span>Instituição:</span>
+                                            <input name="instituicao" type="text" class="form-control form-control-md" placeholder="USP">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-12 float-left">
+                                            <span>Descrição:</span>
+                                            <textarea name="descri_curso" class="form-control form-control-md" placeholder="Descreva esse curso."></textarea>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>data de início:</span>
+                                            <input type="date" value="" min="1901-01-01" id="dataini_curso" name="dataini_curso" class="form-control form-control-md col-12">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>data de conclusão:</span>
+                                            <input type="date" value="" min="1901-01-01" id="datafim_curso" name="datafim_curso" class="form-control form-control-md col-12">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button id="etp2_2" onclick="voltaretapa2()" type="button" class="btn btn-dark btn-block">Voltar</button>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button id="etp4" onclick="iretapa4()" type="button" class="btn btn-success btn-block">Continuar</button>
+                                        </div>
+                                    </div>
+                                    <div id="cad4" class="col-12">
+                                        <h5>Experiências profissionais:</h5>
+                                        <p>Adicione agora sua experiência profissional mais recente, ou preencha mais tarde em seu perfil!</p>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span>Cargo:</span>
+                                            <input name="cargo" type="text" class="form-control form-control-md" placeholder="Analista de Sistemas">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <span>Empresa:</span>
+                                            <input name="empresa" type="text" class="form-control form-control-md" placeholder="HuRe">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-12 float-left">
+                                            <span>Descrição:</span>
+                                            <textarea name="descri_xp" class="form-control form-control-md" placeholder="Descreva suas principais atividades nessa empresa."></textarea>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>data de início:</span>
+                                            <input type="date" value="" min="1901-01-01" id="dataini_xp" name="dataini_xp" class="form-control form-control-md col-12">
+                                        </div>
+                                        <div class="campo-form col-12 col-md-4 float-left">
+                                            <span>data de conclusão:</span>
+                                            <input type="date" value="" min="1901-01-01" id="datafim_xp" name="datafim_xp" class="form-control form-control-md col-12">
+                                        </div>
+                                        <div class="campo-form col-12 float-left">
+                                            <span>Ao clicar em "Finalizar!" você concorda com nossos <a href="#">termos de uso e responsabilidade.</a></span>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button id="etp3_3" onclick="voltaretapa3()" type="button" class="btn btn-dark btn-block">Voltar</button>
+                                        </div>
+                                        <div class="campo-form col-12 col-md-6 float-left">
+                                            <button type="submit" class="btn btn-success btn-block">Finalizar!</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer float-left col-12">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="col-12 float-left">
+            <div id="logo_footer" class="col-12 col-md-3 float-left">
+                <div class="container col-12 float-left">
+                    <span>HuRe</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 float-left">
+                <div id="links_uteis" class="container col-12 float-left">
+                    <span>Links úteis</span>
+                    <ul class="col-12 float-left">
+                        <li>Sobre o HuRe</li>
+                        <li>Privacidade e dados pessoais (LGPD)</li>
+                        <li>Nossos clientes</li>
+                        <li>entre em contato</li>
+                        <li>Carreiras</li>
+                        <li>NoXP</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $("#senha").keyup(function() {
+
+                    var strength = 1;
+
+                    /*length 6 characters or more*/
+                    if(this.value.length >= 6) {
+                        strength++;
+                        $('#senha_tamanho').css('color', 'green');
+                    }else{
+                        $('#senha_tamanho').css('color', 'red');
+                    }
+                    /*contains lowercase characters*/
+                    if(this.value.match(/[a-z]+/)) {
+                        strength++;
+                        $('#senha_minus').css('color', 'green');
+                    }else{
+                        $('#senha_minus').css('color', 'red');
+                    }
+
+                    /*contains digits*/
+                    if(this.value.match(/[0-9]+/)) {
+                        strength++;
+                        $('#senha_nums').css('color', 'green');
+                    }else{
+                        $('#senha_nums').css('color', 'red');
+                    }
+
+                    /*contains uppercase characters*/
+                    if(this.value.match(/[A-Z]+/)) {
+                        strength++;
+                        $('#senha_maius').css('color', 'green');
+                    }else{
+                        $('#senha_maius').css('color', 'red');
+                    }
+
+                    if(strength >= 5){
+                        $('#conf_senha').removeAttr('disabled');
+                    }else{
+                        $('#conf_senha').attr('disabled', true);
+                    }
+                });
+            });
+
+            $(function(){
+                $('#email').keyup(function(){
+                    var busca = $('#email').val();
+                    $.ajax({
+                        url: '{{url_for('person.verifica_cand_email')}}',
+                        data: $('#form-register').serialize(),
+                        type: 'POST',
+                        success: function(response){
+                            console.log(response);
+                            if(response){
+                                $('#email_verifica').html('e-mail já está cadastrado, faça o login');
+                                alert('Email já cadastrado, faça o login');
+                            }else{
+                                $('#email_verifica').html('');
+                            }
+                        },
+                        error: function(error){
+                            console.log(error);
+                        }
+                    });
+                });
+            });
+
+        </script>
+        <script type="text/javascript" src="{{url_for('static', filename='misc.js')}}"></script>
+        <script>
+            function buscaCidades(e){
+               document.querySelector("#cidade").innerHTML = '';
+               var cidade_select = document.querySelector("#cidade");
+
+               var num_estados = json_cidades.estados.length;
+               var j_index = -1;
+
+               // aqui eu pego o index do Estado dentro do JSON
+               for(var x=0;x<num_estados;x++){
+                  if(json_cidades.estados[x].sigla == e){
+                     j_index = x;
+                  }
+               }
+
+               if(j_index != -1){
+
+                  // aqui eu percorro todas as cidades e crio os OPTIONS
+                  json_cidades.estados[j_index].cidades.forEach(function(cidade){
+                     var cid_opts = document.createElement('option');
+                     cid_opts.setAttribute('value',cidade)
+                     cid_opts.innerHTML = cidade;
+                     cidade_select.appendChild(cid_opts);
+                  });
+               }else{
+                  document.querySelector("#cidade").innerHTML = '';
+               }
+            }
+            function iretapa2(){
+                cad1 = document.getElementById('cad1');
+                cad2 = document.getElementById('cad2');
+
+                cad1.style.display = 'none';
+                cad2.style.display = 'block';
+            }
+            function iretapa3(){
+                cad2 = document.getElementById('cad2');
+                cad3 = document.getElementById('cad3');
+
+                cad2.style.display = 'none';
+                cad3.style.display = 'block';
+            }
+            function iretapa4(){
+                cad3 = document.getElementById('cad3');
+                cad4 = document.getElementById('cad4');
+
+                cad3.style.display = 'none';
+                cad4.style.display = 'block';
+            }
+            function voltaretapa1(){
+                cad1 = document.getElementById('cad1');
+                cad2 = document.getElementById('cad2');
+
+                cad1.style.display = 'block';
+                cad2.style.display = 'none';
+            }
+            function voltaretapa2(){
+                cad2 = document.getElementById('cad2');
+                cad3 = document.getElementById('cad3');
+
+                cad2.style.display = 'block';
+                cad3.style.display = 'none';
+            }
+            function voltaretapa3(){
+                cad3 = document.getElementById('cad3');
+                cad4 = document.getElementById('cad4');
+
+                cad3.style.display = 'block';
+                cad4.style.display = 'none';
+            }
+            (function(){
+
+            })();
+            (function(){
+                    var today = new Date();
+                    var dd = today.getDate();
+                    var mm = today.getMonth()+1; //January is 0!
+                    var yyyy = today.getFullYear();
+                     if(dd<10){
+                            dd='0'+dd
+                        }
+                        if(mm<10){
+                            mm='0'+mm
+                        }
+
+                    today = yyyy+'-'+mm+'-'+dd;
+                    document.getElementById("datanasc").setAttribute("max", today);
+                })();
+        </script>
+        <script>
+            function verifica_senha(){
+                etp2 = document.getElementById('etp2');
+                senha = document.getElementById('senha');
+                conf_senha = document.getElementById('conf_senha');
+
+                if(senha.value != ''){
+                    if(senha.value == conf_senha.value){
+                        etp2.disabled = false;
+                    } else{
+                        etp2.disabled = true;
+                    }
+                }
+
+            }
+        </script>
+        <script type="text/javascript">
+            function mostra_menu(){
+                menu_mobile = document.getElementById('menu_mobile');
+
+                if(menu_mobile.style.height != '100vh' && window.innerWidth < 770){
+                    menu_mobile.style.height = '100vh';
+                    menu_mobile.style.left = '0';
+                } else{
+                    menu_mobile.style.height = 0;
+                    menu_mobile.style.left = '-10000';
+                }
+
+            }
+            $(document).ready(function() {
+                var maxHeight = -1;
+                $('.servico').each(function() {
+                    maxHeight = maxHeight > $(this).height() ? maxHeight : $(this).height();
+                });
+
+                $('.servico').each(function() {
+                    $(this).height(maxHeight);
+                });
+             });
+        </script>
+    </body>
+</html>

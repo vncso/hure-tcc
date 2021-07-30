@@ -1,0 +1,83 @@
+body{
+    background-color: #fff;
+}
+ul a {
+    text-decoration: none;
+}
+ul a:hover{
+    text-decoration> none;
+}
+#header{
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+    padding: 0;
+    background-color: #fff;
+}
+#logo{
+    background: -webkit-linear-gradient(cyan,deepskyblue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Fredoka One';
+    font-size: 2em;
+    margin-bottom: 3%;
+    background-color: #fff;
+}
+#sessao_usuario{
+    padding: 5%;
+    border-bottom: 1px solid #eee;
+    display: none;
+}
+/* menu mobile */
+#menu_mobile {
+    display: none;
+    background-color: #fff;
+}
+#menu_mobile ul{
+    list-style: none;
+}
+#menu_itens_mobile{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#sessao_usuario_mobile{
+    padding: 5%;
+    border-bottom: 1px solid #eee;
+}
+/* SIDEBAR */
+#menu_sidebar{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: none;
+}
+.menu_sidebar_item{
+    font-family: 'Jost';
+    padding: 4%;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    color: #333;
+    text-decoration: none;
+}
+.menu_sidebar_item:hover{
+    color: deepskyblue;
+    text-decoration: none;
+}
+@media screen and (min-width: 770px) {
+    #menu_sidebar{
+        display: block !important;
+    }
+    #sessao_usuario{
+        display: block !important;
+    }
+    #menu_mobile{
+        display: none !important;
+    }
+    .vaga{
+        margin-bottom: 0;
+    }
+    .grafico{
+        margin-bottom: 0;
+    }
+}
