@@ -1,0 +1,154 @@
+/*Main*/
+main{
+    background-color: #eee;
+    height: 100%;
+}
+#ult_vagas{
+    background-color: #fff;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 1%;
+    border-radius: 8px;
+    margin-bottom: 1%;
+}
+#ult_vagas h5{
+    font-family: 'Jost';
+}
+.vaga{
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 4%;
+}
+#btn_todas_vagas{
+    margin-top: 2%;
+}
+#relatorios {
+    background-color: #fff;
+    border-radius: 8px;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 1%;
+}
+.grafico{
+    height: 150px;
+    border-radius: 8px;
+    padding: 1%;
+    border: 1px solid #eee;
+    margin-bottom: 4%;
+}
+.icone_grafico i{
+    background: -webkit-linear-gradient(cyan,deepskyblue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.3em;
+    padding: 0;
+}
+.icone_grafico{
+    padding: 0;
+    padding-top: 4%;
+    border-bottom: 1px solid #eee;
+}
+.icone_grafico span{
+    padding: 0;
+}
+.stonks{
+    color: green;
+    padding: 2%;
+}
+.stonks i{
+    color: green;
+}
+.not_stonks{
+    color: #f00;
+    padding: 2%;
+}
+.not_stonks i{
+    color: #f00;
+}
+.not_stonks_big{
+    font-size: 2.5em;
+    padding: 4%;
+    color: #f00;
+}
+.not_stonks_big span{
+    font-size: 0.5em;
+    padding: 4%;
+    color: #f00;
+}
+#btn_relatorio{
+    margin-top: 10%;
+}
+.titulo_vaga{
+    font-family: 'Jost';
+    text-align: left;
+    padding: 2%;
+}
+.titulo_vaga a{
+    color: #333;
+}
+.titulo_vaga a:hover{
+    color: deepskyblue;
+    text-decoration: underline;
+}
+.info_vaga{
+    padding: 2%;
+}
+.info_vaga_item {
+    margin-bottom: 2%;
+}
+.info_vaga_item i{
+    background: -webkit-linear-gradient(cyan,deepskyblue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.descri_vaga{
+    padding: 2%;
+}
+.btns_vaga{
+    padding: 2%;
+}
+#dados-empresa{
+    background-color: #fff;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 1%;
+    border-radius: 8px;
+    margin-bottom: 1%;
+}
+#dados-empresa h5{
+    font-family: 'Jost';
+}
+/* CURRICULO CANDIDATO */
+.secao-curriculo{
+    padding: 1%;
+    border: 1px solid #eee;
+    margin-bottom: 5%;
+    border-radius: 8px;
+}
+.titulo-campo-form{
+    font-family: 'Jost';
+    text-align: center;
+    padding: 3%;
+}
+.sub-secao-curriculo{
+    border: 1px solid deepskyblue;
+    margin-bottom: 4%;
+    border-radius: 8px;
+}
+#info-curriculo{
+    padding:1%;
+    border-left: 1px solid #eee;
+}
+.info-curriculo-box{
+    text-align: center;
+    border: 1px solid #eee;
+    padding: 1%;
+    margin-bottom: 5%;
+}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+    <div class="col-12">
+
+    </div>
+    <div id="candidatos" class="col-12 float-left">
+        <h5>Banco de Talentos</h5>
+        <div class="col-12 float-left">
+            <div class="col-12 float-left campo-form">
+                <form id="form-busca">
+                    <span><i class="fas fa-search"></i> buscar: </span>
+                    <input id="busca" type="text" name="busca" class="col-12 form-control form-control-md" placeholder="insira o termo para busca">
+                </form>
+            </div>
+            <div id="conteudo-busca" class="col-12 float-left">
+                {%for candidato in candidatos%}
+                    <div class="col-12 col-md-4 col-xl-3 candidato-box float-left">
+                        <div class="col-12 candidato text-center">
+                            <img src="https://hure-vncso.herokuapp.com/static/imgs/{{candidato['foto']}}" height="100" width="100">
+                            <h5>{{candidato['nome']}} {{candidato['sobrenome']}}</h5>
+                            <p>{{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}}</p>
+                            <div class="btn btn-outline-info btn-block" data-toggle="modal" data-target="#curriculo{{candidato['_id']}}">Ver Currículo</div>
+                            <a href="{{url_for('rh.curriculo', candidato=candidato['_id'])}}" class="btn btn-outline-dark btn-block">Visualizar no BT</a>
+                        </div>
+                        <div class="modal fade" id="curriculo{{candidato['_id']}}" tabindex="-1" role="dialog" aria-labelledby="curriculo{{candidato['_id']}}Nome" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="container-fluid">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <div class="col-12">
+                                                <div class="col-md-2 col-sm-12 foto-curriculo float-left">
+                                                    <img src="http://127.0.0.1:5000/static/imgs/{{candidato['foto']}}" height="100" width="100">
+                                                </div>
+                                                <div class="col-md-10 col-sm-12 dados-candidato float-left">
+                                                    <h5 class="modal-title col-12 float-left text-left" id="curriculo{{candidato['_id']}}Nome">
+                                                        {{candidato['nome']}} {{candidato['sobrenome']}}
+                                                    </h5>
+                                                    <br/>
+                                                    <h6 class="col-12 float-left text-left">
+                                                        {{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h5 class="titulo-secao-vw-curriculo">Informações básicas e contatos:</h5>
+                                            <div class="curso-curriculo">
+                                                <div class="info-curso-curriculo">
+                                                    <h6>{{candidato['endereco']['rua']}}, {{candidato['endereco']['numero']}}, {{candidato['endereco']['bairro']}} - {{candidato['endereco']['cidade']}}/{{candidato['endereco']['estado']}} ({{candidato['endereco']['cep']}})</h6>
+                                                    <h6>{{candidato['email']}} | <i class="fab fa-facebook-square"></i>  <i class="fab fa-linkedin"></i>  <i class="fas fa-globe"></i>  <i class="fab fa-skype"></i></h6>
+                                                    <h6>{{candidato['contato']['tel1']}} | {{candidato['contato']['tel2']}} | {{candidato['contato']['tel3']}}</h6>
+                                                    <h6></h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h5 class="titulo-secao-vw-curriculo">Educação e Cursos:</h5>
+                                            {% for curso in candidato['cursos'] %}
+                                                <div class="curso-curriculo">
+                                                    <div class="info-curso-curriculo">
+                                                        <h5 class="text-left">{{curso['nome']}}</h5>
+                                                        <h6>{{curso['instituicao']}}</h6>
+                                                        <h6>de: {{curso['inicio']}} até: {{curso['fim']}}</h6>
+                                                    </div>
+                                                    <p>
+                                                        {{curso['descricao']}}
+                                                    </p>
+                                                </div>
+                                            {%endfor%}
+                                        </div>
+                                        <div class="secao-vw-curriculo col-12 float-left">
+                                            <h5 class="titulo-secao-vw-curriculo">Experiências profisisonais:</h5>
+                                            {% for xp in candidato['experiencias'] %}
+                                                <div class="curso-curriculo text-left">
+                                                    <div class="info-curso-curriculo text-left">
+                                                        <h5 class="text-left">{{xp['cargo']}}</h5>
+                                                        <h6>{{xp['empresa']}}</h6>
+                                                        <h6>de: {{xp['inicio']}} até: {{xp['fim']}}</h6>
+                                                    </div>
+                                                    <p>
+                                                        {{xp['descricao']}}
+                                                    </p>
+                                                </div>
+                                            {%endfor%}
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 float-left">
+                                            <a href="#" class="btn btn-outline-success btn-block">Adicionar Anotação</a>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 float-left">
+                                            <a href="#" class="btn btn-outline-danger btn-block">Excluir do BT</a>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 float-left">
+                                            <a href="{{url_for('rh.curriculo', candidato=candidato['_id'])}}" class="btn btn-outline-dark btn-block">Visualizar no BT</a>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

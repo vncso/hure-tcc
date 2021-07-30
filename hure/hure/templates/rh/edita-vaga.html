@@ -1,0 +1,949 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+    {% if inicial == 1 %}
+        <div id="form_vaga" class="col-12 float-left">
+            <form method="post">
+                <div id="vaga_info" class="col-12 col-md-8 float-left campo-form">
+                    <h5>Editar Vaga "{{vaga['cargo']}}"</h5>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <form method="post">
+                    <div class="col-12 campo-form float-left">
+                        <span>Cargo/Função:</span>
+                        <input required type="text" value="{{vaga['cargo']}}" name="cargo" placeholder="cargo/função" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-8 campo-form float-left">
+                        <span>Cidade:</span>
+                        <select required type="text" id="cidade" name="cidade" placeholder="Para qual cidade é a vaga?" class="col-12 form-control form-control-md float-left">
+                            <option value="{{vaga['localizacao']['cidade']}}">{{vaga['localizacao']['cidade']}}</option>
+                        </select>
+                    </div>
+                    <div class="col-4 campo-form float-left">
+                        <span>UF:</span>
+                        <select required id="estado" onchange="buscaCidades(this.value)" name="estado" class="col-12 form-control form-control-md float-left campo-form">
+                            <option {% if vaga['localizacao']['estado'] == 'AC' %}selected{% endif %} value="AC">Acre</option>
+                                <option {% if vaga['localizacao']['estado'] == 'AL' %}selected{% endif %} value="AL">Alagoas</option>
+                                <option {% if vaga['localizacao']['estado'] == 'AP' %}selected{% endif %} value="AP">Amapá</option>
+                                <option {% if vaga['localizacao']['estado'] == 'AM' %}selected{% endif %} value="AM">Amazonas</option>
+                                <option {% if vaga['localizacao']['estado'] == 'BA' %}selected{% endif %} value="BA">Bahia</option>
+                                <option {% if vaga['localizacao']['estado'] == 'CE' %}selected{% endif %} value="CE">Ceará</option>
+                                <option {% if vaga['localizacao']['estado'] == 'DF' %}selected{% endif %} value="DF">Distrito Federal</option>
+                                <option {% if vaga['localizacao']['estado'] == 'ES' %}selected{% endif %} value="ES">Espírito Santo</option>
+                                <option {% if vaga['localizacao']['estado'] == 'GO' %}selected{% endif %} value="GO">Goiás</option>
+                                <option {% if vaga['localizacao']['estado'] == 'MA' %}selected{% endif %} value="MA">Maranhão</option>
+                                <option {% if vaga['localizacao']['estado'] == 'MT' %}selected{% endif %} value="MT">Mato Grosso</option>
+                                <option {% if vaga['localizacao']['estado'] == 'MS' %}selected{% endif %} value="MS">Mato Grosso do Sul</option>
+                                <option {% if vaga['localizacao']['estado'] == 'MG' %}selected{% endif %} value="MG">Minas Gerais</option>
+                                <option {% if vaga['localizacao']['estado'] == 'PA' %}selected{% endif %} value="PA">Pará</option>
+                                <option {% if vaga['localizacao']['estado'] == 'PB' %}selected{% endif %} value="PB">Paraíba</option>
+                                <option {% if vaga['localizacao']['estado'] == 'PR' %}selected{% endif %} value="PR">Paraná</option>
+                                <option {% if vaga['localizacao']['estado'] == 'PE' %}selected{% endif %} value="PE">Pernambuco</option>
+                                <option {% if vaga['localizacao']['estado'] == 'PI' %}selected{% endif %} value="PI">Piauí</option>
+                                <option {% if vaga['localizacao']['estado'] == 'RJ' %}selected{% endif %} value="RJ">Rio de Janeiro</option>
+                                <option {% if vaga['localizacao']['estado'] == 'RN' %}selected{% endif %} value="RN">Rio Grande do Norte</option>
+                                <option {% if vaga['localizacao']['estado'] == 'RS' %}selected{% endif %} value="RS">Rio Grande do Sul</option>
+                                <option {% if vaga['localizacao']['estado'] == 'RO' %}selected{% endif %} value="RO">Rondônia</option>
+                                <option {% if vaga['localizacao']['estado'] == 'RR' %}selected{% endif %} value="RR">Roraima</option>
+                                <option {% if vaga['localizacao']['estado'] == 'SC' %}selected{% endif %} value="SC">Santa Catarina</option>
+                                <option {% if vaga['localizacao']['estado'] == 'SP' %}selected{% endif %} value="SP">São Paulo</option>
+                                <option {% if vaga['localizacao']['estado'] == 'SE' %}selected{% endif %} value="SE">Sergipe</option>
+                                <option {% if vaga['localizacao']['estado'] == 'TO' %}selected{% endif %} value="TO">Tocantins</option>
+                        </select>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>Descricão:</span>
+                        <textarea required placeholder="Descreva as principais atividades da vaga e o que a empresa busca" id="descricao" name="descricao" class="form-control form-control-md col-12 campo-vaga" rows="5">{{vaga['descricao']}}</textarea>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>Requisitos:</span>
+                        <input type="text" value="{% for requisito in vaga['requisitos'] %}{% if requisito == vaga['requisitos'][-1] %}{{requisito}}{% else %}{{requisito}};{% endif %}{% endfor %}" name="requisitos" placeholder="Quais os requisitos para se candidatar? (separe com ';')" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>Benefícios:</span>
+                        <input type="text" value="{% for beneficio in vaga['beneficios'] %}{% if beneficio == vaga['beneficios'][-1] %}{{beneficio}}{% else %}{{beneficio}};{% endif %}{% endfor %}" name="beneficios" placeholder="possui Benefícios? (escreva e separe-os com ';')" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+
+                    <div class="col-4 campo-form float-left">
+                        <span>Salário:</span>
+                        <input value="{{salario}}" type="text" name="salario" placeholder="1100,00" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-4 campo-form float-left">
+                        <span>Tipo de vaga:</span>
+                        <select name="tipo" class="form-control form-control-md campo-vaga">
+                            <option value="1">CLT</option>
+                            <option value="2">Temporário</option>
+                            <option value="3">PJ</option>
+                        </select>
+                    </div>
+                    <div class="col-4 campo-form float-left">
+                        <span>Aberta a PCDs?:</span>
+                        <select name="pcd" class="form-control form-control-md campo-vaga">
+                            <option value="1">SIM</option>
+                            <option value="2">NÃO</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="vaga_opt" class="col-12 col-md-4 float-left">
+                    <div class="col-12 campo-form float-left text-center">
+                        <h5>Opções para vaga</h5>
+                    </div>
+                    <div class="col-6 float-left campo-form">
+                        <a href="{{url_for('rh.deleta_vaga', idvaga=vaga['_id'])}}" class="btn btn-danger btn-md">Deletar vaga</a>
+                    </div>
+                    <div class="col-6 float-left campo-form">
+                        <a href="{{url_for('rh.fecha_vaga', idvaga=vaga['_id'])}}" class="btn btn-dark btn-md">Fechar vaga</a>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>prazo:</span>
+                        <input required type="date" value="{{vaga['prazo']}}" name="prazo" id="prazo" min="" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>publicada:</span>
+                        <select name="publicada" class="form-control form-control-md">
+                            <option selected value="1">Sim</option>
+                            <option value="2">Não</option>
+                        </select>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>palavras-chave:</span>
+                        <textarea class="col-12 form-control form-control-md" name="palavras_chave"
+                        placeholder="Adicione palavras-chave para que a busca por candidatos possam encontrar a vaga mais facilmente."></textarea>
+                    </div>
+                    <div id="questionario" class="col-12 campo-form-pergunta float-left">
+                        <span>Questionário:</span>
+                        {% for pergunta in vaga['perguntas'] %}
+                            {% if pergunta['ativa'] == 1 and pergunta['pergunta'] is not none %}
+                                <div id="pgt_{{pergunta['pgt']}}" class="col-12 pergunta float-left">
+                                    <div class="col-8 float-left pergunta_titulo"><span class="n_pgt" id="n_pgt_{{pergunta['pgt']}}">{{pergunta['pgt']}})</span><span id="pergunta_titulo_{{pergunta['pgt']}}"> {{pergunta['pergunta'][:13]}}...</div></span>
+                                    <div id="edt_pgt_{{pergunta['pgt']}}" class="col-2 float-left edita_pergunta" data-toggle="modal" data-target="#editaQuestionario_pgt_{{pergunta['pgt']}}"><i class="fas fa-edit"></i></div>
+                                    <div onclick="remove_pgt('pgt_{{pergunta['pgt']}}')" id="del_pgt_{{pergunta['pgt']}}" class="col-2 float-left deleta_pergunta"><i class="fas fa-trash-alt"></i></div>
+                                    <input id="pergunta_{{pergunta['pgt']}}" type="hidden" name="pergunta_{{pergunta['pgt']}}" value="{{pergunta['pergunta']}}">
+                                    <input id="tipo_{{pergunta['pgt']}}" type="hidden" name="tipo_{{pergunta['pgt']}}" value="{{pergunta['tipo']}}">
+                                    <input id="obrigatoria_{{pergunta['pgt']}}" type="hidden" name="obrigatoria_{{pergunta['pgt']}}" value="{{pergunta['obrigatoria']}}">
+                                    <input id="respostas_{{pergunta['pgt']}}" type="hidden" name="respostas_{{pergunta['pgt']}}" value="{{pergunta['respostas']}}">
+                                    <input id="sequencia_{{pergunta['pgt']}}" type="hidden" name="sequencia_{{pergunta['pgt']}}" value="{{pergunta['pgt']}}">
+                                </div>
+                                <div class="modal fade" id="editaQuestionario_pgt_{{pergunta['pgt']}}" tabindex="-1" role="dialog" aria-labelledby="addQuestionarioTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addQuestionarioTitle_pgt_{{pergunta['pgt']}}">Editar pergunta a vaga</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="col-6 float-left campo-form">
+                                                    <span>Tipo da pergunta:</span>
+                                                    <select id="edt_tipo_{{pergunta['pgt']}}" name="tipo_pergunta" class="form-control form-control-md">
+                                                        <option {% if pergunta['tipo'] == 1 %} selected {% endif %} value="1">Discursiva</option>
+                                                        <option {% if pergunta['tipo'] == 2 %} selected {% endif %} value="2">Objetiva</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 float-left campo-form">
+                                                    <span>Resposta obrigatória?</span>
+                                                    <select id="edt_obrigatoria_{{pergunta['pgt']}}" name="pergunta_obrigatoria" class="form-control form-control-md">
+                                                        <option {% if pergunta['obrigatoria'] == 1 %} selected {% endif %} value="1">Não</option>
+                                                        <option {% if pergunta['obrigatoria'] == 2 %} selected {% endif %} value="2">Sim</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12 float-left campo-form">
+                                                    <input id="edt_pergunta_{{pergunta['pgt']}}" type="text" name="pergunta" value="{{pergunta['pergunta']}}" class="col-12 form-control form-control-md" placeholder="Insira aqui a pergunta..">
+                                                </div>
+                                                <input id="edt_contador_{{pergunta['pgt']}}" name="contador_pgt_{{pergunta['pgt']}}" type="hidden" value="{{pergunta['pgt']}}">
+                                                <div class="col-12 float-left campo-form">
+                                                    <textarea id="edt_respostas_{{pergunta['pgt']}}" class="col-12 form-control form-control-md" name="opcoes_pergunta"
+                                                    placeholder="Adicione as opções de respostas aqui separadas por ponto-e-vírgula (;) e a resposta correta entre colchetes ([]). Ex: Júpiter;[Saturno];Urano;Netuno ">{% for resposta in pergunta['respostas'] %}{% if resposta == pergunta['respostas'][-1] %}{{resposta}}{% else %}{{resposta}};{% endif %}{% endfor %}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button onclick="edita_pgt('{{pergunta['pgt']}}')" type="button" id="edita_pergunta_btn_{{pergunta['pgt']}}" class="btn btn-success" data-dismiss="modal">Salvar!</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <a class="btn btn-info btn-block float-left" data-toggle="modal" data-target="#addQuestionario">Add pergunta</a>
+                    </div>
+                    <div class="modal fade" id="addQuestionario" tabindex="-1" role="dialog" aria-labelledby="addQuestionarioTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addQuestionarioTitle">Adicionar pergunta a vaga</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="col-6 float-left campo-form">
+                                        <span>Tipo da pergunta:</span>
+                                        <select id="tipo" name="tipo_pergunta" class="form-control form-control-md">
+                                            <option selected value="1">Discursiva</option>
+                                            <option selected value="2">Objetiva</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 float-left campo-form">
+                                        <span>Resposta obrigatória?</span>
+                                        <select id="obrigatoria" name="pergunta_obrigatoria" class="form-control form-control-md">
+                                            <option selected value="1">Não</option>
+                                            <option selected value="2">Sim</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 float-left campo-form">
+                                        <input id="pergunta" type="text" name="pergunta" class="col-12 form-control form-control-md" placeholder="Insira aqui a pergunta..">
+                                    </div>
+                                    <input id="contador" name="contador_pgt" type="hidden" value="{{vaga['qtd_perguntas']}}">
+                                    <div class="col-12 float-left campo-form">
+                                        <textarea id="respostas" class="col-12 form-control form-control-md" name="opcoes_pergunta"
+                                        placeholder="Adicione as opções de respostas aqui separadas por ponto-e-vírgula (;) e a resposta correta entre colchetes ([]). Ex: Júpiter;[Saturno];Urano;Netuno "></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="add_pergunta_btn" class="btn btn-success" data-dismiss="modal">Salvar!</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="empresa" value="{{session['empresa']}}">
+                        <input type="hidden" name="palavra_ignorada" value="{{palavra}}">
+                        <input type="hidden" name="ignoradas" value="{%for palavra in ignoradas%}{{palavra}};{%endfor%}">
+                        <input type="hidden" name="ignora_palavra" value="0">
+                    </div>
+                </div>
+                <div class="col-12 campo-form float-left">
+                    <button class="btn btn-success btn-block">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript" src="{{url_for('static', filename='misc.js')}}"></script>
+        <script>
+            function buscaCidades(e){
+               document.querySelector("#cidade").innerHTML = '';
+               var cidade_select = document.querySelector("#cidade");
+
+               var num_estados = json_cidades.estados.length;
+               var j_index = -1;
+
+               // aqui eu pego o index do Estado dentro do JSON
+               for(var x=0;x<num_estados;x++){
+                  if(json_cidades.estados[x].sigla == e){
+                     j_index = x;
+                  }
+               }
+
+               if(j_index != -1){
+
+                  // aqui eu percorro todas as cidades e crio os OPTIONS
+                  json_cidades.estados[j_index].cidades.forEach(function(cidade){
+                     var cid_opts = document.createElement('option');
+                     cid_opts.setAttribute('value',cidade)
+                     cid_opts.innerHTML = cidade;
+                     cidade_select.appendChild(cid_opts);
+                  });
+               }else{
+                  document.querySelector("#cidade").innerHTML = '';
+               }
+            }
+            (function(){
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                 if(dd<10){
+                        dd='0'+dd
+                    }
+                    if(mm<10){
+                        mm='0'+mm
+                    }
+
+                today = yyyy+'-'+mm+'-'+dd;
+                document.getElementById("prazo").setAttribute("min", today);
+            })();
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            /*
+            * Função com JQuery para manipular o DOM e adicionar perguntas ao questionário da vaga
+            * São permitidas até 7 perguntas no questionário
+            * Perguntas não podem ser vazias
+            */
+            $(document).ready(function(){
+                $("#add_pergunta_btn").click(function(){
+                    // definição das variáveis para as perguntas
+                    var tipo = $("#tipo").val();
+                    var pergunta = $("#pergunta").val();
+                    var respostas = $("#respostas").val();
+                    var obrigatoria = $("#obrigatoria").val();
+                    var contador = parseInt($("#contador").val(), 10);
+                    // valida a quantidade de perguntas já presentes no questionário
+                    if(contador <= 7){
+                        // valida se a pergunta é válida
+                        if(pergunta != ''){
+                            // cria a DIV com a classe "pergunta" dentro da DIV "questionário"
+                            $("#questionario").append('<div id="pgt_'+String(contador)+'" class="col-12 pergunta float-left">'+
+                            '<div class="col-8 float-left pergunta_titulo"><span class="n_pgt" id="n_pgt_'+ String(contador) +'">'+ String(contador) +')</span><span id="pergunta_titulo_'+ String(contador) +'"> '+ pergunta +'</div></span>'+
+                            '<div id="edt_pgt_'+String(contador)+'" class="col-2 float-left edita_pergunta" data-toggle="modal" data-target="#editaQuestionario_pgt_'+String(contador)+'"><i class="fas fa-edit"></i></div>'+
+                            '<div id="del_pgt_'+String(contador)+'" onclick="remove_pgt(\'pgt_'+String(contador)+'\')" class="col-2 float-left deleta_pergunta"><i class="fas fa-trash-alt"></i></div>'+
+                            '<input id="pergunta_'+ String(contador)+'" type="hidden" name="pergunta_'+ String(contador) +'" value="'+pergunta+'"> '+
+                            '<input id="tipo_'+ String(contador)+'" type="hidden" name="tipo_'+ String(contador) +'" value="'+tipo+'"> '+
+                            '<input id="obrigatoria_'+ String(contador)+'" type="hidden" name="obrigatoria_'+ String(contador) +'" value="'+obrigatoria+'"> '+
+                            '<input id="respostas_'+ String(contador)+'" type="hidden" name="respostas_'+ String(contador) +'" value="'+respostas+'"> '+
+                            '<input id="sequencia_'+ String(contador)+'" type="hidden" name="sequencia_'+ String(contador) +'" value="'+ String(contador)+'"> '+
+                            '<div class="modal fade" id="editaQuestionario_pgt_'+String(contador)+'" tabindex="-1" role="dialog" aria-labelledby="addQuestionarioTitle" aria-hidden="true">'+
+                                '<div class="modal-dialog modal-lg modal-dialog-centered" role="document">'+
+                                    '<div class="modal-content">'+
+                                        '<div class="modal-header">'+
+                                            '<h5 class="modal-title" id="editaQuestionarioTitle_pgt_'+String(contador)+'">Adicionar pergunta a vaga</h5>'+
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+                                                '<span aria-hidden="true">&times;</span>'+
+                                            '</button>'+
+                                        '</div>'+
+                                        '<div class="modal-body">'+
+                                            '<div class="col-6 float-left campo-form">'+
+                                                '<span>Tipo da pergunta:</span>'+
+                                                '<select id="edt_tipo_'+String(contador)+'" name="tipo_pergunta" class="form-control form-control-md">'+
+                                                    '<option selected value="1">Discursiva</option>'+
+                                                    '<option selected value="2">Objetiva</option>'+
+                                                '</select>'+
+                                            '</div>'+
+                                            '<div class="col-6 float-left campo-form">'+
+                                                '<span>Resposta obrigatória?</span>'+
+                                                '<select id="edt_obrigatoria_'+String(contador)+'" name="pergunta_obrigatoria" class="form-control form-control-md">'+
+                                                    '<option selected value="1">Não</option>'+
+                                                    '<option selected value="2">Sim</option>'+
+                                                '</select>'+
+                                            '</div>'+
+                                            '<div class="col-12 float-left campo-form">'+
+                                                '<input id="edt_pergunta_'+String(contador)+'" type="text" value="'+pergunta+'" name="pergunta" class="col-12 form-control form-control-md" placeholder="Insira aqui a pergunta..">'+
+                                            '</div>'+
+                                            '<input id="edt_contador_'+String(contador)+'" name="contador_pgt_'+String(contador)+'" type="hidden" value="'+String(contador)+'">'+
+                                            '<div class="col-12 float-left campo-form">'+
+                                                '<textarea id="edt_respostas_'+String(contador)+'" class="col-12 form-control form-control-md" name="opcoes_pergunta" placeholder="Adicione as opções de respostas aqui separadas por ponto-e-vírgula (;) e a resposta correta entre colchetes ([]). Ex: Júpiter;[Saturno];Urano;Netuno ">'+respostas+'</textarea>'+
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div class="modal-footer">'+
+                                            '<button onclick="edita_pgt(\''+String(contador)+'\')" type="button" id="edita_pergunta_btn_'+String(contador)+'" class="btn btn-success" data-dismiss="modal">Salvar!</button>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                            '</div>');
+                            // incrementa o contador para as perguntas
+                            $('#contador').val( function(i, oldval) {
+                                return ++oldval;
+                            });
+                            // reseta o formulário para uma nova pergunta
+                            $('#pergunta').val('');
+                            $('#respostas').val('');
+                        } else{
+                            alert('pergunta não pode ser vazia');
+                        }
+                    }else{
+                        alert('Número máximo de questões já adicionadas ao questionário');
+                    }
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            /*
+            * Função para editar as perguntas
+            *
+            */
+            function edita_pgt(pgt){
+                //dados alterados
+                edt_pergunta = document.getElementById('edt_pergunta_'+ String(pgt));
+                edt_tipo = document.getElementById('edt_tipo_'+ String(pgt));
+                edt_obrigatoria = document.getElementById('edt_obrigatoria_'+ String(pgt));
+                edt_respostas = document.getElementById('edt_respostas_'+ String(pgt));
+                edt_sequencia = document.getElementById('edt_sequencia_'+ String(pgt));
+
+                //alvos
+                //inputs hidden
+                pergunta_value = document.getElementById('pergunta_'+ String(pgt));
+                tipo_value = document.getElementById('tipo_'+ String(pgt));
+                obrigatoria_value = document.getElementById('obrigatoria_'+ String(pgt));
+                respostas_value = document.getElementById('respostas_'+ String(pgt));
+                sequencia_value = document.getElementById('sequencia_'+ String(pgt));
+
+                //exibição no DOM
+                titulo = document.getElementById('pergunta_titulo_'+String(pgt));
+
+                //atribui valores alterados
+                pergunta_value.setAttribute('value', edt_pergunta.value);
+                titulo.innerHTML = edt_pergunta.value;
+                tipo_value.setAttribute('value', edt_tipo.value);
+                obrigatoria_value.setAttribute('value', edt_obrigatoria.value);
+                respostas_value.setAttribute('value', edt_respostas.value);
+                sequencia_value.setAttribute('value', edt_sequencia.value);
+
+            }
+        </script>
+        <script type="text/javascript">
+            /*
+            * Função para remover perguntas do questionário
+            * Ao remover a pergunta, a sequência de perguntas deve ser recalculada
+            * os campos com os dados a serem enviados para o Backend também precisam ser renomeados
+                de acordo
+            */
+            function remove_pgt(pgt){
+                // confirmação da exclusão da pergunta
+                remover = confirm('Tem certeza que quer remover essa pergunta?');
+                contador = document.getElementById("contador");
+                if(remover == true){
+                    // definição de variáveis
+                    var questionário = document.getElementById("questionario");
+                    var pergunta_questionario = document.getElementById(String(pgt));
+                    var n_removida = parseInt(pgt.substr(4, 4));
+                    contador.value = parseInt(contador.value) - 1;
+                    alert(pergunta_questionario);
+                    questionario.removeChild(pergunta_questionario);
+                    // percorre todas as perguntas no questionário
+                    for(i=1;i<=contador.value;i++){
+                        // definição das variáveis de cada pergunta
+                        pgt_atual = document.getElementById('pgt_'+ String(i));
+                        edt_btn = document.getElementById('edt_pgt_'+ String(i));
+                        del_pgt_atual = document.getElementById('del_pgt_'+ String(i));
+                        cont_atual = document.getElementById('n_pgt_'+ String(i));
+
+                        pergunta = document.getElementById('pergunta_'+ String(i));
+                        titulo = document.getElementById('pergunta_titulo_'+ String(i));
+                        tipo = document.getElementById('tipo_'+ String(i));
+                        obrigatoria = document.getElementById('obrigatoria_'+ String(i));
+                        respostas = document.getElementById('respostas_'+ String(i));
+                        sequencia = document.getElementById('sequencia_'+ String(i));
+
+                        /*
+                         * verifica se pergunta atual no laço foi feita posterior a pergunta removida
+                         * Se sim, decrementa o valor em 1 para que a sequência se restabeleça
+                         */
+                        if(i > n_removida){
+                            cont_atual.innerHTML = String(i - 1) + ')';
+                            cont_atual.setAttribute('id', 'n_pgt_' + String(i - 1));
+                            pgt_atual.setAttribute('id', 'pgt_' + String(i - 1));
+
+                            edt_btn.setAttribute('id', 'edt_pgt_' + String(i - 1));
+                            edt_btn.setAttribute('data-target', '#editaQuestionario_pgt_'+ String(i - 1));
+                            del_pgt_atual.setAttribute('id', 'del_pgt_' + String(i - 1));
+                            del_pgt_atual.setAttribute("onclick", "remove_pgt('pgt_"+String(i - 1)+"')");
+
+                            pergunta.setAttribute('id', 'pergunta_' + String(i - 1));
+                            titulo.setAttribute('id', 'pergunta_titulo_' + String(i - 1));
+                            obrigatoria.setAttribute('id', 'obrigatoria_' + String(i - 1));
+                            tipo.setAttribute('id', 'tipo_' + String(i - 1));
+                            respostas.setAttribute('id', 'respostas_' + String(i - 1));
+                            sequencia.setAttribute('id', 'sequencia_' + String(i - 1));
+
+                            pergunta.setAttribute('name', 'pergunta_' + String(i - 1));
+                            obrigatoria.setAttribute('name', 'obrigatoria_' + String(i - 1));
+                            tipo.setAttribute('name', 'tipo_' + String(i - 1));
+                            respostas.setAttribute('name', 'respostas_' + String(i - 1));
+                            sequencia.setAttribute('name', 'sequencia_' + String(i - 1));
+
+                            sequencia.setAttribute('value', String(i - 1));
+
+                            edt_form = document.getElementById('editaQuestionario_pgt_'+ String(i));
+                            edt_form_title = document.getElementById('editaQuestionarioTitle_pgt_'+ String(i));
+                            edt_pergunta = document.getElementById('edt_pergunta_'+ String(i));
+                            edt_tipo = document.getElementById('edt_tipo_'+ String(i));
+                            edt_obrigatoria = document.getElementById('edt_obrigatoria_'+ String(i));
+                            edt_respostas = document.getElementById('edt_respostas_'+ String(i));
+                            edt_pergunta_btn = document.getElementById('edita_pergunta_btn_'+ String(i));
+                            edt_sequencia = document.getElementById('edt_sequencia_'+ String(i));
+
+                            edt_form.setAttribute('id', 'editaQuestionario_pgt_' + String(i - 1));
+                            edt_form_title.setAttribute('id', 'editaQuestionarioTitle_pgt_' + String(i - 1));
+                            edt_pergunta.setAttribute('id', 'edt_pergunta_' + String(i - 1));
+                            edt_obrigatoria.setAttribute('id', 'edt_obrigatoria_' + String(i - 1));
+                            edt_tipo.setAttribute('id', 'edt_tipo_' + String(i - 1));
+                            edt_respostas.setAttribute('id', 'edt_respostas_' + String(i - 1));
+                            edt_pergunta_btn.setAttribute('id', 'edita_pergunta_btn_' + String(i - 1));
+                            edt_pergunta_btn.setAttribute('onclick', "edita_pgt('"+String(i - 1)+"')");
+                            edt_sequencia.setAttribute('id', 'edt_sequencia_' + String(i - 1));
+
+                        }
+                    }
+                    // remove a pergunta do DOM
+                }
+            }
+        </script>
+    {% else %}
+        <div id="form_vaga" class="col-12 float-left">
+            <form method="post">
+                <div id="vaga_info" class="col-12 col-md-8 float-left campo-form">
+                    <h5>Nova Vaga</h5>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <div class="col-12 campo-form float-left">
+                        <span>Cargo/Função:</span>
+                        <input required type="text" value="{{cargo}}" name="cargo" placeholder="cargo/função" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-8 campo-form float-left">
+                        <span>Cidade:</span>
+                        <select required type="text" id="cidade" name="cidade" placeholder="Para qual cidade é a vaga?" class="col-12 form-control form-control-md float-left">
+                            <option value="{{cidade}}">{{cidade}}</option>
+                        </select>
+                    </div>
+                    <div class="col-4 campo-form float-left">
+                        <span>UF:</span>
+                        <select required id="estado" onchange="buscaCidades(this.value)" name="estado" class="col-12 form-control form-control-md float-left campo-form">
+                            <option {% if estado == 'AC' %}selected{% endif %} value="AC">Acre</option>
+                                <option {% if estado == 'AL' %}selected{% endif %} value="AL">Alagoas</option>
+                                <option {% if estado == 'AP' %}selected{% endif %} value="AP">Amapá</option>
+                                <option {% if estado == 'AM' %}selected{% endif %} value="AM">Amazonas</option>
+                                <option {% if estado == 'BA' %}selected{% endif %} value="BA">Bahia</option>
+                                <option {% if estado == 'CE' %}selected{% endif %} value="CE">Ceará</option>
+                                <option {% if estado == 'DF' %}selected{% endif %} value="DF">Distrito Federal</option>
+                                <option {% if estado == 'ES' %}selected{% endif %} value="ES">Espírito Santo</option>
+                                <option {% if estado == 'GO' %}selected{% endif %} value="GO">Goiás</option>
+                                <option {% if estado == 'MA' %}selected{% endif %} value="MA">Maranhão</option>
+                                <option {% if estado == 'MT' %}selected{% endif %} value="MT">Mato Grosso</option>
+                                <option {% if estado == 'MS' %}selected{% endif %} value="MS">Mato Grosso do Sul</option>
+                                <option {% if estado == 'MG' %}selected{% endif %} value="MG">Minas Gerais</option>
+                                <option {% if estado == 'PA' %}selected{% endif %} value="PA">Pará</option>
+                                <option {% if estado == 'PB' %}selected{% endif %} value="PB">Paraíba</option>
+                                <option {% if estado == 'PR' %}selected{% endif %} value="PR">Paraná</option>
+                                <option {% if estado == 'PE' %}selected{% endif %} value="PE">Pernambuco</option>
+                                <option {% if estado == 'PI' %}selected{% endif %} value="PI">Piauí</option>
+                                <option {% if estado == 'RJ' %}selected{% endif %} value="RJ">Rio de Janeiro</option>
+                                <option {% if estado == 'RN' %}selected{% endif %} value="RN">Rio Grande do Norte</option>
+                                <option {% if estado == 'RS' %}selected{% endif %} value="RS">Rio Grande do Sul</option>
+                                <option {% if estado == 'RO' %}selected{% endif %} value="RO">Rondônia</option>
+                                <option {% if estado == 'RR' %}selected{% endif %} value="RR">Roraima</option>
+                                <option {% if estado == 'SC' %}selected{% endif %} value="SC">Santa Catarina</option>
+                                <option {% if estado == 'SP' %}selected{% endif %} value="SP">São Paulo</option>
+                                <option {% if estado == 'SE' %}selected{% endif %} value="SE">Sergipe</option>
+                                <option {% if estado == 'TO' %}selected{% endif %} value="TO">Tocantins</option>
+                        </select>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>Descricão:</span>
+                        <textarea required placeholder="Descreva as principais atividades da vaga e o que a empresa busca" id="descricao" name="descricao" class="form-control form-control-md col-12 campo-vaga" rows="5">{{descricao}}</textarea>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>Requisitos:</span>
+                        <input type="text" value="{% for requisito in requisitos %}{% if requisito == requisitos[-1] %}{{requisito}}{% else %}{{requisito}};{% endif %}{% endfor %}" name="requisitos" placeholder="Quais os requisitos para se candidatar? (separe com ';')" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>Benefícios:</span>
+                        <input type="text" value="{% for beneficio in beneficios %}{% if beneficio == beneficios[-1] %}{{beneficio}}{% else %}{{beneficio}};{% endif %}{% endfor %}" name="beneficios" placeholder="possui Benefícios? (escreva e separe-os com ';')" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+
+                    <div class="col-4 campo-form float-left">
+                        <span>Salário:</span>
+                        <input value="{{salario}}" type="text" name="salario" placeholder="1100,00" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-4 campo-form float-left">
+                        <span>Tipo de vaga:</span>
+                        <select name="tipo" class="form-control form-control-md campo-vaga">
+                            <option value="1">CLT</option>
+                            <option value="2">Temporário</option>
+                            <option value="3">PJ</option>
+                        </select>
+                    </div>
+                    <div class="col-4 campo-form float-left">
+                        <span>Aberta a PCDs?:</span>
+                        <select name="pcd" class="form-control form-control-md campo-vaga">
+                            <option value="1">SIM</option>
+                            <option value="2">NÃO</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="vaga_opt" class="col-12 col-md-4 float-left">
+                    <div class="col-12 campo-form float-left text-center">
+                        <h5>Opções para vaga</h5>
+                    </div>
+                    <div class="col-6 float-left campo-form">
+                        <a href="{{url_for('rh.deleta_vaga', idvaga=vaga['_id'])}}" class="btn btn-danger btn-md">Deletar vaga</a>
+                    </div>
+                    <div class="col-6 float-left campo-form">
+                        <a href="{{url_for('rh.fecha_vaga', idvaga=vaga['_id'])}}" class="btn btn-dark btn-md">Fechar vaga</a>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>prazo:</span>
+                        <input required type="date" value="{{prazo}}" name="prazo" id="prazo" min="" class="col-12 form-control form-control-md campo-vaga">
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>publicada:</span>
+                        <select name="publicada" class="form-control form-control-md">
+                            <option selected value="1">Sim</option>
+                            <option value="2">Não</option>
+                        </select>
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <span>palavras-chave:</span>
+                        <textarea class="col-12 form-control form-control-md" name="palavras_chave"
+                        placeholder="Adicione palavras-chave para que a busca por candidatos possam encontrar a vaga mais facilmente."></textarea>
+                    </div>
+                    <div id="questionario" class="col-12 campo-form-pergunta float-left">
+                        <span>Questionário:</span>
+                        {% for pergunta in vaga['perguntas'] %}
+                            {% if pergunta['ativa'] == 1 and pergunta['pergunta'] is not none %}
+                                <div id="pgt_{{pergunta['pgt']}}" class="col-12 pergunta float-left">
+                                    <div class="col-8 float-left pergunta_titulo"><span class="n_pgt" id="n_pgt_{{pergunta['pgt']}}">{{pergunta['pgt']}})</span><span id="pergunta_titulo_{{pergunta['pgt']}}"> {{pergunta['pergunta'][:13]}}...</div></span>
+                                    <div id="edt_pgt_{{pergunta['pgt']}}" class="col-2 float-left edita_pergunta" data-toggle="modal" data-target="#editaQuestionario_pgt_{{pergunta['pgt']}}"><i class="fas fa-edit"></i></div>
+                                    <div onclick="remove_pgt('pgt_{{pergunta['pgt']}}')" id="del_pgt_{{pergunta['pgt']}}" class="col-2 float-left deleta_pergunta"><i class="fas fa-trash-alt"></i></div>
+                                    <input id="pergunta_{{pergunta['pgt']}}" type="hidden" name="pergunta_{{pergunta['pgt']}}" value="{{pergunta['pergunta']}}">
+                                    <input id="tipo_{{pergunta['pgt']}}" type="hidden" name="tipo_{{pergunta['pgt']}}" value="{{pergunta['tipo']}}">
+                                    <input id="obrigatoria_{{pergunta['pgt']}}" type="hidden" name="obrigatoria_{{pergunta['pgt']}}" value="{{pergunta['obrigatoria']}}">
+                                    <input id="respostas_{{pergunta['pgt']}}" type="hidden" name="respostas_{{pergunta['pgt']}}" value="{{pergunta['respostas']}}">
+                                    <input id="sequencia_{{pergunta['pgt']}}" type="hidden" name="sequencia_{{pergunta['pgt']}}" value="{{pergunta['pgt']}}">
+                                </div>
+                                <div class="modal fade" id="editaQuestionario_pgt_{{pergunta['pgt']}}" tabindex="-1" role="dialog" aria-labelledby="addQuestionarioTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addQuestionarioTitle_pgt_{{pergunta['pgt']}}">Editar pergunta a vaga</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="col-6 float-left campo-form">
+                                                    <span>Tipo da pergunta:</span>
+                                                    <select id="edt_tipo_{{pergunta['pgt']}}" name="tipo_pergunta" class="form-control form-control-md">
+                                                        <option selected value="1">Discursiva</option>
+                                                        <option selected value="2">Objetiva</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 float-left campo-form">
+                                                    <span>Resposta obrigatória?</span>
+                                                    <select id="edt_obrigatoria_{{pergunta['pgt']}}" name="pergunta_obrigatoria" class="form-control form-control-md">
+                                                        <option selected value="1">Não</option>
+                                                        <option selected value="2">Sim</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12 float-left campo-form">
+                                                    <input id="edt_pergunta_{{pergunta['pgt']}}" type="text" name="pergunta" value="{{pergunta['pergunta']}}" class="col-12 form-control form-control-md" placeholder="Insira aqui a pergunta..">
+                                                </div>
+                                                <input id="edt_contador_{{pergunta['pgt']}}" name="contador_pgt_{{pergunta['pgt']}}" type="hidden" value="{{pergunta['pgt']}}">
+                                                <div class="col-12 float-left campo-form">
+                                                    <textarea id="edt_respostas_{{pergunta['pgt']}}" class="col-12 form-control form-control-md" name="opcoes_pergunta"
+                                                    placeholder="Adicione as opções de respostas aqui separadas por ponto-e-vírgula (;) e a resposta correta entre colchetes ([]). Ex: Júpiter;[Saturno];Urano;Netuno ">{% for resposta in pergunta['respostas'] %}{% if resposta == pergunta['respostas'][-1] %}{{resposta}}{% else %}{{resposta}};{% endif %}{% endfor %}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button onclick="edita_pgt('{{pergunta['pgt']}}')" type="button" id="edita_pergunta_btn_{{pergunta['pgt']}}" class="btn btn-success" data-dismiss="modal">Salvar!</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="col-12 campo-form float-left">
+                        <a class="btn btn-info btn-block float-left" data-toggle="modal" data-target="#addQuestionario">Add pergunta</a>
+                    </div>
+                    <div class="modal fade" id="addQuestionario" tabindex="-1" role="dialog" aria-labelledby="addQuestionarioTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addQuestionarioTitle">Adicionar pergunta a vaga</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="col-6 float-left campo-form">
+                                        <span>Tipo da pergunta:</span>
+                                        <select id="tipo" name="tipo_pergunta" class="form-control form-control-md">
+                                            <option selected value="1">Discursiva</option>
+                                            <option selected value="2">Objetiva</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 float-left campo-form">
+                                        <span>Resposta obrigatória?</span>
+                                        <select id="obrigatoria" name="pergunta_obrigatoria" class="form-control form-control-md">
+                                            <option selected value="1">Não</option>
+                                            <option selected value="2">Sim</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 float-left campo-form">
+                                        <input id="pergunta" type="text" name="pergunta" class="col-12 form-control form-control-md" placeholder="Insira aqui a pergunta..">
+                                    </div>
+                                    <input id="contador" name="contador_pgt" type="hidden" value="{{vaga['qtd_perguntas']}}">
+                                    <div class="col-12 float-left campo-form">
+                                        <textarea id="respostas" class="col-12 form-control form-control-md" name="opcoes_pergunta"
+                                        placeholder="Adicione as opções de respostas aqui separadas por ponto-e-vírgula (;) e a resposta correta entre colchetes ([]). Ex: Júpiter;[Saturno];Urano;Netuno "></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="add_pergunta_btn" class="btn btn-success" data-dismiss="modal">Salvar!</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="empresa" value="{{session['empresa']}}">
+                        <input type="hidden" name="palavra_ignorada" value="{{palavra}}">
+                        <input type="hidden" name="ignoradas" value="{%for palavra in ignoradas%}{{palavra}};{%endfor%}">
+                        <input type="hidden" name="ignora_palavra" value="0">
+                    </div>
+                </div>
+                <div class="col-12 campo-form float-left">
+                    <button class="btn btn-success btn-block">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript" src="{{url_for('static', filename='misc.js')}}"></script>
+        <script>
+            function buscaCidades(e){
+               document.querySelector("#cidade").innerHTML = '';
+               var cidade_select = document.querySelector("#cidade");
+
+               var num_estados = json_cidades.estados.length;
+               var j_index = -1;
+
+               // aqui eu pego o index do Estado dentro do JSON
+               for(var x=0;x<num_estados;x++){
+                  if(json_cidades.estados[x].sigla == e){
+                     j_index = x;
+                  }
+               }
+
+               if(j_index != -1){
+
+                  // aqui eu percorro todas as cidades e crio os OPTIONS
+                  json_cidades.estados[j_index].cidades.forEach(function(cidade){
+                     var cid_opts = document.createElement('option');
+                     cid_opts.setAttribute('value',cidade)
+                     cid_opts.innerHTML = cidade;
+                     cidade_select.appendChild(cid_opts);
+                  });
+               }else{
+                  document.querySelector("#cidade").innerHTML = '';
+               }
+            }
+            (function(){
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                 if(dd<10){
+                        dd='0'+dd
+                    }
+                    if(mm<10){
+                        mm='0'+mm
+                    }
+
+                today = yyyy+'-'+mm+'-'+dd;
+                document.getElementById("prazo").setAttribute("min", today);
+            })();
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            /*
+            * Função com JQuery para manipular o DOM e adicionar perguntas ao questionário da vaga
+            * São permitidas até 7 perguntas no questionário
+            * Perguntas não podem ser vazias
+            */
+            $(document).ready(function(){
+                $("#add_pergunta_btn").click(function(){
+                    // definição das variáveis para as perguntas
+                    var tipo = $("#tipo").val();
+                    var pergunta = $("#pergunta").val();
+                    var respostas = $("#respostas").val();
+                    var obrigatoria = $("#obrigatoria").val();
+                    var contador = parseInt($("#contador").val(), 10);
+                    // valida a quantidade de perguntas já presentes no questionário
+                    if(contador <= 7){
+                        // valida se a pergunta é válida
+                        if(pergunta != ''){
+                            // cria a DIV com a classe "pergunta" dentro da DIV "questionário"
+                            $("#questionario").append('<div id="pgt_'+String(contador)+'" class="col-12 pergunta float-left">'+
+                            '<div class="col-8 float-left pergunta_titulo"><span class="n_pgt" id="n_pgt_'+ String(contador) +'">'+ String(contador) +')</span><span id="pergunta_titulo_'+ String(contador) +'"> '+ pergunta +'</div></span>'+
+                            '<div id="edt_pgt_'+String(contador)+'" class="col-2 float-left edita_pergunta" data-toggle="modal" data-target="#editaQuestionario_pgt_'+String(contador)+'"><i class="fas fa-edit"></i></div>'+
+                            '<div id="del_pgt_'+String(contador)+'" onclick="remove_pgt(\'pgt_'+String(contador)+'\')" class="col-2 float-left deleta_pergunta"><i class="fas fa-trash-alt"></i></div>'+
+                            '<input id="pergunta_'+ String(contador)+'" type="hidden" name="pergunta_'+ String(contador) +'" value="'+pergunta+'"> '+
+                            '<input id="tipo_'+ String(contador)+'" type="hidden" name="tipo_'+ String(contador) +'" value="'+tipo+'"> '+
+                            '<input id="obrigatoria_'+ String(contador)+'" type="hidden" name="obrigatoria_'+ String(contador) +'" value="'+obrigatoria+'"> '+
+                            '<input id="respostas_'+ String(contador)+'" type="hidden" name="respostas_'+ String(contador) +'" value="'+respostas+'"> '+
+                            '<input id="sequencia_'+ String(contador)+'" type="hidden" name="sequencia_'+ String(contador) +'" value="'+ String(contador)+'"> '+
+                            '<div class="modal fade" id="editaQuestionario_pgt_'+String(contador)+'" tabindex="-1" role="dialog" aria-labelledby="addQuestionarioTitle" aria-hidden="true">'+
+                                '<div class="modal-dialog modal-lg modal-dialog-centered" role="document">'+
+                                    '<div class="modal-content">'+
+                                        '<div class="modal-header">'+
+                                            '<h5 class="modal-title" id="editaQuestionarioTitle_pgt_'+String(contador)+'">Adicionar pergunta a vaga</h5>'+
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+                                                '<span aria-hidden="true">&times;</span>'+
+                                            '</button>'+
+                                        '</div>'+
+                                        '<div class="modal-body">'+
+                                            '<div class="col-6 float-left campo-form">'+
+                                                '<span>Tipo da pergunta:</span>'+
+                                                '<select id="edt_tipo_'+String(contador)+'" name="tipo_pergunta" class="form-control form-control-md">'+
+                                                    '<option selected value="1">Discursiva</option>'+
+                                                    '<option selected value="2">Objetiva</option>'+
+                                                '</select>'+
+                                            '</div>'+
+                                            '<div class="col-6 float-left campo-form">'+
+                                                '<span>Resposta obrigatória?</span>'+
+                                                '<select id="edt_obrigatoria_'+String(contador)+'" name="pergunta_obrigatoria" class="form-control form-control-md">'+
+                                                    '<option selected value="1">Não</option>'+
+                                                    '<option selected value="2">Sim</option>'+
+                                                '</select>'+
+                                            '</div>'+
+                                            '<div class="col-12 float-left campo-form">'+
+                                                '<input id="edt_pergunta_'+String(contador)+'" type="text" value="'+pergunta+'" name="pergunta" class="col-12 form-control form-control-md" placeholder="Insira aqui a pergunta..">'+
+                                            '</div>'+
+                                            '<input id="edt_contador_'+String(contador)+'" name="contador_pgt_'+String(contador)+'" type="hidden" value="'+String(contador)+'">'+
+                                            '<div class="col-12 float-left campo-form">'+
+                                                '<textarea id="edt_respostas_'+String(contador)+'" class="col-12 form-control form-control-md" name="opcoes_pergunta" placeholder="Adicione as opções de respostas aqui separadas por ponto-e-vírgula (;) e a resposta correta entre colchetes ([]). Ex: Júpiter;[Saturno];Urano;Netuno ">'+respostas+'</textarea>'+
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div class="modal-footer">'+
+                                            '<button onclick="edita_pgt(\''+String(contador)+'\')" type="button" id="edita_pergunta_btn_'+String(contador)+'" class="btn btn-success" data-dismiss="modal">Salvar!</button>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                            '</div>');
+                            // incrementa o contador para as perguntas
+                            $('#contador').val( function(i, oldval) {
+                                return ++oldval;
+                            });
+                            // reseta o formulário para uma nova pergunta
+                            $('#pergunta').val('');
+                            $('#respostas').val('');
+                        } else{
+                            alert('pergunta não pode ser vazia');
+                        }
+                    }else{
+                        alert('Número máximo de questões já adicionadas ao questionário');
+                    }
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            /*
+            * Função para editar as perguntas
+            *
+            */
+            function edita_pgt(pgt){
+                //dados alterados
+                edt_pergunta = document.getElementById('edt_pergunta_'+ String(pgt));
+                edt_tipo = document.getElementById('edt_tipo_'+ String(pgt));
+                edt_obrigatoria = document.getElementById('edt_obrigatoria_'+ String(pgt));
+                edt_respostas = document.getElementById('edt_respostas_'+ String(pgt));
+                edt_sequencia = document.getElementById('edt_sequencia_'+ String(pgt));
+
+                //alvos
+                //inputs hidden
+                pergunta_value = document.getElementById('pergunta_'+ String(pgt));
+                tipo_value = document.getElementById('tipo_'+ String(pgt));
+                obrigatoria_value = document.getElementById('obrigatoria_'+ String(pgt));
+                respostas_value = document.getElementById('respostas_'+ String(pgt));
+                sequencia_value = document.getElementById('sequencia_'+ String(pgt));
+
+                //exibição no DOM
+                titulo = document.getElementById('pergunta_titulo_'+String(pgt));
+
+                //atribui valores alterados
+                pergunta_value.setAttribute('value', edt_pergunta.value);
+                titulo.innerHTML = edt_pergunta.value;
+                tipo_value.setAttribute('value', edt_tipo.value);
+                obrigatoria_value.setAttribute('value', edt_obrigatoria.value);
+                respostas_value.setAttribute('value', edt_respostas.value);
+                sequencia_value.setAttribute('value', edt_sequencia.value);
+
+            }
+        </script>
+        <script type="text/javascript">
+            /*
+            * Função para remover perguntas do questionário
+            * Ao remover a pergunta, a sequência de perguntas deve ser recalculada
+            * os campos com os dados a serem enviados para o Backend também precisam ser renomeados
+                de acordo
+            */
+            function remove_pgt(pgt){
+                // confirmação da exclusão da pergunta
+                remover = confirm('Tem certeza que quer remover essa pergunta?');
+                contador = document.getElementById("contador");
+                if(remover == true){
+                    // definição de variáveis
+                    var questionário = document.getElementById("questionario");
+                    var pergunta_questionario = document.getElementById(String(pgt));
+                    var n_removida = parseInt(pgt.substr(4, 4));
+                    contador.value = parseInt(contador.value) - 1;
+                    alert(pergunta_questionario);
+                    questionario.removeChild(pergunta_questionario);
+                    // percorre todas as perguntas no questionário
+                    for(i=1;i<=contador.value;i++){
+                        // definição das variáveis de cada pergunta
+                        pgt_atual = document.getElementById('pgt_'+ String(i));
+                        edt_btn = document.getElementById('edt_pgt_'+ String(i));
+                        del_pgt_atual = document.getElementById('del_pgt_'+ String(i));
+                        cont_atual = document.getElementById('n_pgt_'+ String(i));
+
+                        pergunta = document.getElementById('pergunta_'+ String(i));
+                        titulo = document.getElementById('pergunta_titulo_'+ String(i));
+                        tipo = document.getElementById('tipo_'+ String(i));
+                        obrigatoria = document.getElementById('obrigatoria_'+ String(i));
+                        respostas = document.getElementById('respostas_'+ String(i));
+                        sequencia = document.getElementById('sequencia_'+ String(i));
+
+                        /*
+                         * verifica se pergunta atual no laço foi feita posterior a pergunta removida
+                         * Se sim, decrementa o valor em 1 para que a sequência se restabeleça
+                         */
+                        if(i > n_removida){
+                            cont_atual.innerHTML = String(i - 1) + ')';
+                            cont_atual.setAttribute('id', 'n_pgt_' + String(i - 1));
+                            pgt_atual.setAttribute('id', 'pgt_' + String(i - 1));
+
+                            edt_btn.setAttribute('id', 'edt_pgt_' + String(i - 1));
+                            edt_btn.setAttribute('data-target', '#editaQuestionario_pgt_'+ String(i - 1));
+                            del_pgt_atual.setAttribute('id', 'del_pgt_' + String(i - 1));
+                            del_pgt_atual.setAttribute("onclick", "remove_pgt('pgt_"+String(i - 1)+"')");
+
+                            pergunta.setAttribute('id', 'pergunta_' + String(i - 1));
+                            titulo.setAttribute('id', 'pergunta_titulo_' + String(i - 1));
+                            obrigatoria.setAttribute('id', 'obrigatoria_' + String(i - 1));
+                            tipo.setAttribute('id', 'tipo_' + String(i - 1));
+                            respostas.setAttribute('id', 'respostas_' + String(i - 1));
+                            sequencia.setAttribute('id', 'sequencia_' + String(i - 1));
+
+                            pergunta.setAttribute('name', 'pergunta_' + String(i - 1));
+                            obrigatoria.setAttribute('name', 'obrigatoria_' + String(i - 1));
+                            tipo.setAttribute('name', 'tipo_' + String(i - 1));
+                            respostas.setAttribute('name', 'respostas_' + String(i - 1));
+                            sequencia.setAttribute('name', 'sequencia_' + String(i - 1));
+
+                            sequencia.setAttribute('value', String(i - 1));
+
+                            edt_form = document.getElementById('editaQuestionario_pgt_'+ String(i));
+                            edt_form_title = document.getElementById('editaQuestionarioTitle_pgt_'+ String(i));
+                            edt_pergunta = document.getElementById('edt_pergunta_'+ String(i));
+                            edt_tipo = document.getElementById('edt_tipo_'+ String(i));
+                            edt_obrigatoria = document.getElementById('edt_obrigatoria_'+ String(i));
+                            edt_respostas = document.getElementById('edt_respostas_'+ String(i));
+                            edt_pergunta_btn = document.getElementById('edita_pergunta_btn_'+ String(i));
+                            edt_sequencia = document.getElementById('edt_sequencia_'+ String(i));
+
+                            edt_form.setAttribute('id', 'editaQuestionario_pgt_' + String(i - 1));
+                            edt_form_title.setAttribute('id', 'editaQuestionarioTitle_pgt_' + String(i - 1));
+                            edt_pergunta.setAttribute('id', 'edt_pergunta_' + String(i - 1));
+                            edt_obrigatoria.setAttribute('id', 'edt_obrigatoria_' + String(i - 1));
+                            edt_tipo.setAttribute('id', 'edt_tipo_' + String(i - 1));
+                            edt_respostas.setAttribute('id', 'edt_respostas_' + String(i - 1));
+                            edt_pergunta_btn.setAttribute('id', 'edita_pergunta_btn_' + String(i - 1));
+                            edt_pergunta_btn.setAttribute('onclick', "edita_pgt('"+String(i - 1)+"')");
+                            edt_sequencia.setAttribute('id', 'edt_sequencia_' + String(i - 1));
+
+                        }
+                    }
+                    // remove a pergunta do DOM
+                }
+            }
+        </script>
+    {% endif %}
+{% endblock %}

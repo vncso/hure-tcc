@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+<div class="alert alert-{{ category }} text-center" xmlns="http://www.w3.org/1999/html">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% if vagas|length > 0 %}
+        <div id="ult_vagas" class="col-12 float-left">
+            <div class="col-12 float-left text-center">
+                <h5>Últimas vagas</h5>
+            </div>
+            {%for vaga in vagas%}
+                {% if vaga['publicada'] == 1 or vaga['publicada'] == 0 %}
+                    <div class="col-12 col-md-4 col-xl-3 float-left">
+                        <div class="col-12 vaga">
+                            <h5 class="titulo_vaga"><a href="{{url_for('vagas.vaga', empresa=session['empresa'], idvaga=vaga['_id'])}}" target="_blank">{{vaga['cargo']}}</a></h5>
+                            <div class="info_vaga">
+                                <div class="info_vaga_item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{vaga['localizacao']['cidade']}}/{{vaga['localizacao']['estado']}}</span>
+                                </div>
+                                <div class="info_vaga_item">
+                                    <i class="fas fa-users"></i>
+                                    <span>{{vaga['candidatos']}} candidatos</span>
+                                </div>
+                            </div>
+                            <div class="descri_vaga">
+                                <p>{{vaga['descricao'][:40]}}...</p>
+                            </div>
+                            <div class="btns_vaga">
+                                <a href="{{url_for('rh.edita_vaga', idvaga=vaga['_id'])}}" class="btn btn-outline-dark btn-block">Editar</a>
+                                <a href="{{url_for('rh.processo', idvaga=vaga['_id'])}}" class="btn btn-outline-success btn-block">Acompanhar</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div id="btn_todas_vagas" class="col-12 float-left">
+                <button class="btn btn-outline-dark btn-block">Ver todas as suas vagas</button>
+            </div>
+        </div>
+    {% endif %}
+    <div id="relatorios" class="col-12 float-left">
+            <div class="col-12 col-md-4 col-xl-3 float-left">
+                <div class="col-12 grafico">
+                    <div class="col-12 float-left text-center icone_grafico">
+                        <i class="fas fa-users"></i>
+                        <span class="col-12 float-left text-left">{{candidatos}} candidatos no BT</span>
+                    </div>
+                    <div class="col-6 float-left text-center stonks">
+                        <i class="fas fa-arrow-circle-up"></i> +
+                    </div>
+                    <div class="col-6 float-left text-center not_stonks">
+                        <i class="fas fa-arrow-circle-down"></i> -
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 col-xl-3 float-left">
+                <div class="col-12 grafico">
+                    <div class="col-12 float-left text-center icone_grafico">
+                        <i class="fas fa-file-alt"></i>
+                        <span class="col-12 float-left text-center">{{vagas_mes}} vagas abertas no mês</span>
+                    </div>
+                    <div class="col-6 float-left text-center stonks">
+                        {% if vagas_mes > vagas_mes_anterior %}
+                            <i class="fas fa-arrow-circle-up"></i> {{(vagas_mes / vagas_mes_anterior ) * 100}}
+                        {% else %}
+                            <i class="fas fa-arrow-circle-up"></i> -{{(vagas_mes / vagas_mes_anterior ) * 100}}
+                        {% endif %}
+                    </div>
+                    <div class="col-6 float-left text-center not_stonks">
+                        <i class="fas fa-arrow-circle-down"></i> 0
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 col-xl-3 float-left">
+                <div class="col-12 grafico">
+                    <div class="col-12 float-left text-center not_stonks_big">
+                        <i class="fas fa-arrow-circle-down"></i>
+                        <span class="col-12 float-left text-center">Turnover (em breve)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 col-xl-3 float-left">
+                <div class="col-12 grafico">
+                    <div class="col-12 float-left text-center icone_grafico">
+                        <i class="fas fa-chart-bar"></i>
+                        <span class="col-12 float-left text-center">Ver relatorios</span>
+                    </div>
+                    <div id="btn_relatorio" class="container col-12 float-left">
+                        <button class="btn btn-success btn-block">Relatórios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
