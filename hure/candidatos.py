@@ -14,8 +14,7 @@ import datetime
 import random
 import string
 import requests
-from bson.objectid import ObjectId
-from auth import login_required
+from auth import login_required, fazer_login
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,8 +27,20 @@ bd_users = db.conn.hure.users
 
 
 def envia_email(destinatario, assunto, mensagem):
+    """
+        Função para envio de e-mails. Será usada no envio de confirmações, notificações e avisos sobre a conta
+        e candidaturas feitas atraveś da plataforma.
+
+        O serviço de e-mail utilizado é o 'MAILGUN'. Verificar no arquivo .env as variáveis de ambiente necessárias
+        para que funcione sem erros
+
+        Parametros:
+            destinatario (str): quem vai receber o e-mail (usuário)
+            assunto (str): título do e-mail
+            mensagem (str): Mensagem enviada, em HTML.
+    """
     return requests.post(
-        'https://api.mailgun.net/v3/'+os.environ.get('MAILGUN_DOMAIN')+'/messages',
+        'https://api.mailgun.net/v3/' + os.environ.get('MAILGUN_DOMAIN') + '/messages',
         auth=("api", os.environ.get('MAILGUN_API_KEY')),
         data={"from": "HuRe <info@hure.com.br>",
               "to": [destinatario],
@@ -38,12 +49,21 @@ def envia_email(destinatario, assunto, mensagem):
 
 
 def login_required_candidato(func):
+    """
+            função para limitar o acesso as áreas restritas da plataforma (áreas que somente usuários logados podem acessar)
+            utilizamos as sessões criadas na função 'fazer login' para validar se o usuário está logado ou não.
+
+            Essa função valida uma sessão diferente da função existente em auth.py
+
+            se não estiver logado é redirecionado para a página de login.
+        """
     @functools.wraps(func)
     def secure_function(*args, **kwargs):
         if "cand_id" not in session:
             return redirect(url_for('index'))
         else:
             return func(*args, **kwargs)
+
     return secure_function
 
 
@@ -56,7 +76,12 @@ class JSONEncoder(json.JSONEncoder):
 
 @person.route('/register/', methods=['GET', 'POST'])
 def register():
+    """
+        Página para cadastro do currículo do candidato.
+
+    """
     if request.method == 'POST':
+        # dados pessoais
         nome = request.form.get('nome')
         sobrenome = request.form.get('sobrenome')
         genero = request.form.get('genero')
@@ -65,9 +90,7 @@ def register():
         senha = request.form.get('senha')
         conf_senha = request.form.get('conf_senha')
 
-        print(f'SENHA: {senha}')
-        print(f'CONF. SENHA: {conf_senha}')
-
+        # dados endereço e contatos
         cep = request.form.get('cep')
         rua = request.form.get('rua')
         numero = request.form.get('numero')
@@ -78,19 +101,21 @@ def register():
         tel2 = request.form.get('telefone2')
         linkedin = request.form.get('linkedin')
 
+        # dados da educação
         curso = request.form.get('curso')
         instituicao = request.form.get('instituicao')
         descri_curso = request.form.get('descri_curso')
         dataini_curso = request.form.get('dataini_curso')
         datafim_curso = request.form.get('datafim_curso')
 
+        # dados para a experiência
         cargo = request.form.get('cargo')
         empresa = request.form.get('empresa')
         descri_xp = request.form.get('descri_xp')
         dataini_xp = request.form.get('dataini_xp')
         datafim_xp = request.form.get('datafim_xp')
 
-        # Chave de ativação da conta (verificação por e-mail
+        # Chave de ativação da conta (verificação por e-mail)
         chave = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
         bd = bd_candidatos
@@ -122,13 +147,13 @@ def register():
                 'skype': ""
             },
             'cursos': [
-                    {
-                        'nome': curso,
-                        'instituicao': instituicao,
-                        'inicio': dataini_curso,
-                        'fim': datafim_curso,
-                        'descricao': descri_curso
-                    }
+                {
+                    'nome': curso,
+                    'instituicao': instituicao,
+                    'inicio': dataini_curso,
+                    'fim': datafim_curso,
+                    'descricao': descri_curso
+                }
             ] if (curso is None or curso == '') or (instituicao is None or instituicao == '') else [],
             'experiencias': [
                 {
@@ -155,6 +180,7 @@ def register():
 
         print(verifica)
 
+        # verifica se o candidato já está cadastrado
         if email in verifica.values():
             print('EMAIL JÁ CADASTRADO')
             flash('já existe uma conta com o e-mail informado, faça o login ou recupere a senha', 'info')
@@ -163,6 +189,7 @@ def register():
             print('USUÁRIO CRIADO COM SUCESSO')
             bd.insert_one(candidato)
 
+            # envia o e-mail para confirmação da conta
             envia_email(email, 'HuRe - Verifique sua conta!',
                         '<div>'
                         '<link rel="preconnect" href="https://fonts.gstatic.com">'
@@ -202,6 +229,10 @@ def register():
 
 @person.route('/verifica-conta/', methods=['GET', 'POST'])
 def login_verifica():
+    """
+        Verificação da conta pelo e-mail. O código é enviado para p e-mail informado ao criar o cadastro.
+
+    """
     if request.method == 'POST':
         bd = bd_candidatos
         chave = request.form.get('chave')
@@ -227,30 +258,22 @@ def login():
     senha = request.form.get('senha')
     usuario = request.form.get('usuario')
     vaga = request.form.get('idvaga')
-    empresa = request.form.get('empresa')
-    bd = bd_candidatos
-    # bd = hure.hure.db.conn.cursor()
-    error = None
+    empresa = request.form.get('empresa') if request.form.get('empresa') is not None else 0
 
-    user = bd.find_one({'email': usuario})
-    print(user)
-    if user == None:
-        redirect(url_for('person.register'))
-    elif user['ativo'] == 0:
-        session.clear()
-        session['email_verifica'] = usuario
-        flash('Você precisa verificar sua conta antes de acessar. O código foi enviado para o seu e-mail', 'info')
-        return redirect(url_for('person.login_verifica'))
+    # chama a função para realizar o login
+    login = fazer_login(int(empresa), usuario, senha, vaga)
+
+    # Login para candidatos (tipo = 1):
+    if login['tipo'] == 1:
+        if login['status'] == 0:
+            return redirect(url_for('person.register'))
+
+        elif login['status'] == 1:
+            return redirect(url_for('person.curriculo'))
+        else:
+            return redirect(url_for('vagas.vaga', empresa=login['empresa'], vaga=login['vaga']))
     else:
-        verifica_senha = user['senha']
-        if check_password_hash(verifica_senha, senha):
-            session.clear()
-            session['cand_id'] = user['email']
-            if vaga is None:
-                return redirect(url_for('person.curriculo'))
-            else:
-                return redirect(url_for('vagas.vaga', empresa=empresa, idvaga=ObjectId(vaga)))
-        print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
+        return redirect(url_for('index'))
 
     return render_template('auth/login-candidato.html')
 
@@ -265,7 +288,6 @@ def foto(foto):
 @person.route('/curriculo/')
 @login_required_candidato
 def curriculo():
-
     bd = bd_candidatos
     user = list(bd.find({'email': session['cand_id']}).limit(1))
     user = user[0]
@@ -312,7 +334,7 @@ def atualiza_curriculo():
 
         bd.update({'_id': ObjectId(id_user)}, {
             '$set': {
-                'foto': 'hure-logo.jpg', # secure_filename(foto.filename),
+                'foto': 'hure-logo.jpg',  # secure_filename(foto.filename),
                 'nome': nome,
                 'sobrenome': sobrenome,
                 'email': email,
@@ -441,15 +463,15 @@ def cadastra_curriculo_bt():
                 }
             ],
             'candidaturas': [{
-                    'id': ObjectId(id_vaga),
-                    'cargo': 'Banco de Talentos',
-                    'empresa': empresa_bt,
-                    'cidade': cidade_empresa,
-                    'estado': estado_empresa,
-                    'status': 1,
-                    'respostas': [],
-                    'data': hoje
-                }],
+                'id': ObjectId(id_vaga),
+                'cargo': 'Banco de Talentos',
+                'empresa': empresa_bt,
+                'cidade': cidade_empresa,
+                'estado': estado_empresa,
+                'status': 1,
+                'respostas': [],
+                'data': hoje
+            }],
             'anotacoes': [],
             'foto': '',
             'ativo': 0,
@@ -509,7 +531,6 @@ def cadastra_curriculo_bt():
 
 @person.route('/login-bt/<int:empresa>/<bt_vaga>', methods=['GET', 'POST'])
 def login_bt(empresa, bt_vaga):
-
     senha = request.form.get('senha')
     usuario = request.form.get('usuario')
     vaga = request.form.get('idvaga')
@@ -556,6 +577,9 @@ def login_bt(empresa, bt_vaga):
 @person.route('/add-curso/', methods=['POST'])
 @login_required_candidato
 def add_curso():
+    """
+        Adiciona cursos ao curríulo.
+    """
     bd = bd_candidatos
     if request.method == 'POST':
         curso = request.form.get('curso')
@@ -583,6 +607,9 @@ def add_curso():
 @person.route('/add-experiencia/', methods=['POST'])
 @login_required_candidato
 def add_experiencia():
+    """
+        Adiciona experiências ao curríulo.
+    """
     bd = bd_candidatos
     if request.method == 'POST':
         cargo = request.form.get('cargo')
@@ -610,7 +637,9 @@ def add_experiencia():
 @person.route('candidaturas/')
 @login_required_candidato
 def candidaturas():
-
+    """
+        Retorna todas as candidaturas do candidato logado.
+    """
     bd = bd_candidatos
 
     vagas = list(bd.find({'email': session['cand_id']}, {'candidaturas': 1}))
@@ -629,6 +658,9 @@ def candidaturas():
 
 @person.route('/verifica-cand-email/', methods=['POST'])
 def verifica_cand_email():
+    """
+        Verifica em tempo real se o e-mail informado já está cadastrado.
+    """
     bd = bd_candidatos
     query = request.form.get('email')
     # busca = re.compile(f'.*{query}*.', re.IGNORECASE)
