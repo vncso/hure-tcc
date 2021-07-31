@@ -3,13 +3,14 @@ from werkzeug.security import check_password_hash
 import auth
 import rh
 import db as db
-import misc
 import candidatos
-import os
 import api.vagas as vagas
+from auth import fazer_login
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 def create_app():
     app = Flask(__name__)
@@ -24,221 +25,103 @@ def create_app():
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
-            if request.form.get('empresa') != '':
-                usuario = request.form.get('usuario')
-                senha = request.form.get('senha')
-                empresa = request.form.get('empresa')
-                bd = db.conn.hure.users
-                # bd = hure.db.conn.cursor()
-                error = None
+            usuario = request.form.get('usuario')
+            senha = request.form.get('senha')
+            empresa = request.form.get('empresa') if request.form.get('empresa') != '' else 0
 
-                users = bd.find_one({'$and': [{'empresa': int(empresa)}, {'users.email': usuario}]}, {'users': 1})
-                for user in users['users']:
-                    if user['email'] == usuario:
-                        verifica_senha = user['senha']
-                        if check_password_hash(verifica_senha, senha):
-                            session.clear()
-                            session['user_id'] = user['email']
-                            session['empresa'] = empresa
+            # chama a função para realizar o login
+            login = fazer_login(int(empresa), usuario, senha)
 
-                            if user['primeiro_acesso'] == 1:
-                                session.clear()
-                                session['user_id_temp'] = user['email']
-                                session['empresa_temp'] = empresa
-                                return redirect(url_for('auth.troca_senha'))
-
-                            return redirect(url_for('rh.painel'))
-                        print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
-                        flash('usuário ou senha incorretos', 'danger')
-                        return redirect(url_for('auth.login'))
-                    else:
-                        print('erro de login')
-
-            else:
-                senha = request.form.get('senha')
-                usuario = request.form.get('usuario')
-                vaga = request.form.get('idvaga')
-                empresa = request.form.get('empresa')
-                bd = db.conn.hure.candidatos
-                # bd = hure.hure.db.conn.cursor()
-                error = None
-
-                user = bd.find_one({'email': usuario})
-                print(user)
-                if user == None:
-                    redirect(url_for('person.register'))
+            # Login para empresas (tipo = 0):
+            if login['tipo'] == 0:
+                if login['status'] == 1:
+                    return redirect(url_for('auth.troca_senha'))
+                elif login['status'] == 2:
+                    return redirect(url_for('rh.painel'))
                 else:
-                    verifica_senha = user['senha']
-                    if check_password_hash(verifica_senha, senha):
-                        session.clear()
-                        session['cand_id'] = user['email']
-                        if vaga is None:
-                            return redirect(url_for('person.curriculo'))
-                        else:
-                            return redirect(url_for('vagas.vaga', empresa=empresa, idvaga=ObjectId(vaga)))
-                    print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
-        # query = 'SELECT * FROM usuarios WHERE usuario = ?'
-        # bd.execute(query, (usuario,))
-        # row = bd.fetchone()
+                    flash('Usuário ou senha incorretos. Tente novamente.')
+                    return redirect(url_for('auth.login'))
 
-        # if row is None:
-        # error = 'Usuário incorreto'
-        # elif not check_password_hash(row[3], senha):
-        # error = 'Senha incorreta'
+            # Login para candidatos (tipo = 1):
+            elif login['tipo'] == 1:
+                if login['status'] == 0:
+                    return redirect(url_for('person.register'))
 
-        # if error is None:
-        #     session.clear()
-        #     session['user_id'] = row[0]
-        #     return redirect(url_for('auth.painel'))
-        # flash(error)
+                elif login['status'] == 1:
+                    print('CHEGOU AQUI')
+                    return redirect(url_for('person.curriculo'))
+                else:
+                    return redirect(url_for('vagas.vaga', empresa=login['empresa'], vaga=login['vaga']))
+            else:
+                return redirect(url_for('index'))
 
         return render_template('hure/index.html')
 
     @app.route('/servicos', methods=['GET', 'POST'])
     def servicos():
         if request.method == 'POST':
-            if request.form.get('empresa') != '':
-                usuario = request.form.get('usuario')
-                senha = request.form.get('senha')
-                empresa = request.form.get('empresa')
-                bd = db.conn.hure.users
-                # bd = hure.db.conn.cursor()
-                error = None
+            usuario = request.form.get('usuario')
+            senha = request.form.get('senha')
+            empresa = request.form.get('empresa') if request.form.get('empresa') != '' else 0
 
-                users = bd.find_one({'$and': [{'empresa': int(empresa)}, {'users.email': usuario}]}, {'users': 1})
-                for user in users['users']:
-                    if user['email'] == usuario:
-                        verifica_senha = user['senha']
-                        if check_password_hash(verifica_senha, senha):
-                            session.clear()
-                            session['user_id'] = user['email']
-                            session['empresa'] = empresa
+            # chama a função para realizar o login
+            login = fazer_login(int(empresa), usuario, senha)
 
-                            if user['primeiro_acesso'] == 1:
-                                session.clear()
-                                session['user_id_temp'] = user['email']
-                                session['empresa_temp'] = empresa
-                                return redirect(url_for('auth.troca_senha'))
-
-                            return redirect(url_for('rh.painel'))
-                        print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
-                        flash('usuário ou senha incorretos', 'danger')
-                        return redirect(url_for('auth.login'))
-                    else:
-                        print('erro de login')
-
-            else:
-                senha = request.form.get('senha')
-                usuario = request.form.get('usuario')
-                vaga = request.form.get('idvaga')
-                empresa = request.form.get('empresa')
-                bd = db.conn.hure.candidatos
-                # bd = hure.hure.db.conn.cursor()
-                error = None
-
-                user = bd.find_one({'email': usuario})
-                print(user)
-                if user == None:
-                    redirect(url_for('person.register'))
+            # Login para empresas (tipo = 0):
+            if login['tipo'] == 0:
+                if login['status'] == 1:
+                    return redirect(url_for('auth.troca_senha'))
+                elif login['status'] == 2:
+                    return redirect(url_for('rh.painel'))
                 else:
-                    verifica_senha = user['senha']
-                    if check_password_hash(verifica_senha, senha):
-                        session.clear()
-                        session['cand_id'] = user['email']
-                        if vaga is None:
-                            return redirect(url_for('person.curriculo'))
-                        else:
-                            return redirect(url_for('vagas.vaga', empresa=empresa, idvaga=ObjectId(vaga)))
-                    print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
+                    flash('Usuário ou senha incorretos. Tente novamente.')
+                    return redirect(url_for('auth.login'))
 
-        # query = 'SELECT * FROM usuarios WHERE usuario = ?'
-        # bd.execute(query, (usuario,))
-        # row = bd.fetchone()
+            # Login para candidatos (tipo = 1):
+            elif login['tipo'] == 1:
+                if login['status'] == 0:
+                    return redirect(url_for('person.register'))
 
-        # if row is None:
-        # error = 'Usuário incorreto'
-        # elif not check_password_hash(row[3], senha):
-        # error = 'Senha incorreta'
-
-        # if error is None:
-        #     session.clear()
-        #     session['user_id'] = row[0]
-        #     return redirect(url_for('auth.painel'))
-        # flash(error)
+                elif login['status'] == 1:
+                    return redirect(url_for('person.curriculo'))
+                else:
+                    return redirect(url_for('vagas.vaga', empresa=login['empresa'], vaga=login['vaga']))
+            else:
+                return redirect(url_for('index'))
 
         return render_template('hure/servicos.html')
 
     @app.route('/sobre', methods=['GET', 'POST'])
     def sobre():
         if request.method == 'POST':
-            if request.form.get('empresa') != '':
-                usuario = request.form.get('usuario')
-                senha = request.form.get('senha')
-                empresa = request.form.get('empresa')
-                bd = db.conn.hure.users
-                # bd = hure.db.conn.cursor()
-                error = None
+            usuario = request.form.get('usuario')
+            senha = request.form.get('senha')
+            empresa = request.form.get('empresa') if request.form.get('empresa') != '' else 0
 
-                users = bd.find_one({'$and': [{'empresa': int(empresa)}, {'users.email': usuario}]}, {'users': 1})
-                for user in users['users']:
-                    if user['email'] == usuario:
-                        verifica_senha = user['senha']
-                        if check_password_hash(verifica_senha, senha):
-                            session.clear()
-                            session['user_id'] = user['email']
-                            session['empresa'] = empresa
+            # chama a função para realizar o login
+            login = fazer_login(int(empresa), usuario, senha)
 
-                            if user['primeiro_acesso'] == 1:
-                                session.clear()
-                                session['user_id_temp'] = user['email']
-                                session['empresa_temp'] = empresa
-                                return redirect(url_for('auth.troca_senha'))
-
-                            return redirect(url_for('rh.painel'))
-                        print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
-                        flash('usuário ou senha incorretos', 'danger')
-                        return redirect(url_for('auth.login'))
-                    else:
-                        print('erro de login')
-
-            else:
-                senha = request.form.get('senha')
-                usuario = request.form.get('usuario')
-                vaga = request.form.get('idvaga')
-                empresa = request.form.get('empresa')
-                bd = db.conn.hure.candidatos
-                # bd = hure.hure.db.conn.cursor()
-                error = None
-
-                user = bd.find_one({'email': usuario})
-                print(user)
-                if user == None:
-                    redirect(url_for('person.register'))
+            # Login para empresas (tipo = 0):
+            if login['tipo'] == 0:
+                if login['status'] == 1:
+                    return redirect(url_for('auth.troca_senha'))
+                elif login['status'] == 2:
+                    return redirect(url_for('rh.painel'))
                 else:
-                    verifica_senha = user['senha']
-                    if check_password_hash(verifica_senha, senha):
-                        session.clear()
-                        session['cand_id'] = user['email']
-                        if vaga is None:
-                            return redirect(url_for('person.curriculo'))
-                        else:
-                            return redirect(url_for('vagas.vaga', empresa=empresa, idvaga=ObjectId(vaga)))
-                    print(f'senha não bateu {verifica_senha} / {check_password_hash(verifica_senha, senha)}')
+                    flash('Usuário ou senha incorretos. Tente novamente.')
+                    return redirect(url_for('auth.login'))
 
-            # query = 'SELECT * FROM usuarios WHERE usuario = ?'
-            # bd.execute(query, (usuario,))
-            # row = bd.fetchone()
+            # Login para candidatos (tipo = 1):
+            elif login['tipo'] == 1:
+                if login['status'] == 0:
+                    return redirect(url_for('person.register'))
 
-            # if row is None:
-            # error = 'Usuário incorreto'
-            # elif not check_password_hash(row[3], senha):
-            # error = 'Senha incorreta'
-
-            # if error is None:
-            #     session.clear()
-            #     session['user_id'] = row[0]
-            #     return redirect(url_for('auth.painel'))
-            # flash(error)
+                elif login['status'] == 1:
+                    return redirect(url_for('person.curriculo'))
+                else:
+                    return redirect(url_for('vagas.vaga', empresa=login['empresa'], vaga=login['vaga']))
+            else:
+                return redirect(url_for('index'))
 
         return render_template('hure/sobre.html')
 
