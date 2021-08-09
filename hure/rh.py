@@ -1,6 +1,7 @@
 import pymongo
 import db as db
 import misc as misc
+from candidatos import envia_email
 from flask import (
     Blueprint, flash, redirect, render_template, request, session, url_for
 )
@@ -26,19 +27,16 @@ bd_candidatos = db.conn.hure.candidatos
 bd_users = db.conn.hure.users
 
 
-def envia_email(destinatario, assunto, mensagem):
-    return requests.post(
-        os.environ.get('MAILGUN_URI'),
-        auth=("api", os.environ.get('MAILGUN_KEY')),
-        data={"from": "HuRe <info@hure.com.br>",
-              "to": [destinatario],
-              "subject": assunto,
-              "html": mensagem})
-
-
 @rh.route('/edita-vaga/<idvaga>', methods=['GET', 'POST'])
 @login_required
 def edita_vaga(idvaga):
+    """
+        RF-8: Editar vagas de emprego publicadas
+
+        Página para edição de uma vaga publicada na plataforma. Essa página deve trazer todas as informações de uma
+        vaga publicada anteriormente que ainda não esteja com o status de "fechada (3)".
+
+    """
     bd = bd_users
     user = list(bd.find({'$and': [{'empresa': int(session['empresa'])}, {'users.email': session['user_id']}]}).limit(1))
     user = user[0]['users']
@@ -63,6 +61,7 @@ def edita_vaga(idvaga):
         pcd = request.form.get('pcd')
         tipo = request.form.get('tipo')
         prazo = request.form.get('prazo')
+
         # PERGUNTAS E QUESTIONÁRIO
         pergunta_0 = request.form.get('pergunta_0')
         tipo_0 = int(request.form.get('tipo_0')) if pergunta_0 is not None else 0
@@ -181,6 +180,12 @@ def edita_vaga(idvaga):
         contador = request.form.get('contador_pgt')
         publicada = request.form.get('publicada')
         palavras_chave = request.form.get('palavras_chave')
+
+        """
+            Verificação de palavras que podem ser interpretadas de maneira errônea ou que são ofensivas no conteúdo
+            da vaga. Se for encontrada uma palavra que seja ofensiva o sistema informa e pede a confirmação do usuário
+            sobre se deseja ou não realmente continuar.
+        """
         ignora_palavra = int(request.form.get('ignora_palavra'))
         palavra_ignorada = request.form.get('palavra_ignorada')
         ignoradas_form = request.form.get('ignoradas') if request.form.get('ignoradas') is not None else 'hure'
@@ -238,7 +243,14 @@ def edita_vaga(idvaga):
 @rh.route('/abre-vaga/', methods=['GET', 'POST'])
 @login_required
 def abre_vaga():
+    """"
+        RF-2: Cadastro e publicação de vagas de emprego
 
+        página para abrir uma vaga pela plataforma. Possibilita a abertura de vagas, adição de perguntas ao questionario
+        e a publicação da vaga criada.
+
+
+    """
     bd = bd_users
     user = list(bd.find({'$and': [{'empresa': int(session['empresa'])}, {'users.email': session['user_id']}]}).limit(1))
     user = user[0]['users']
@@ -258,7 +270,11 @@ def abre_vaga():
         pcd = request.form.get('pcd')
         tipo = request.form.get('tipo')
         prazo = request.form.get('prazo')
+
         # PERGUNTAS E QUESTIONÁRIO
+        """
+            RF-5: Adicionar perguntas a uma vaga de emprego (questionário)
+        """
         pergunta_0 = request.form.get('pergunta_0')
         tipo_0 = int(request.form.get('tipo_0')) if pergunta_0 is not None else 0
         obrigatoria_0 = request.form.get('obrigatoria_0') if pergunta_0 is not None else 0
@@ -373,9 +389,16 @@ def abre_vaga():
                         'ativa': 1 if pergunta_7 is not None else 0
                     },
                 ]
-        contador = request.form.get('contador_pgt')
+        contador = request.form.get('contador_pgt')  # quantidade de perguntas adicionadas a vaga
+
         publicada = request.form.get('publicada')
         palavras_chave = request.form.get('palavras_chave')
+
+        """
+            Verificação de palavras que podem ser interpretadas de maneira errônea ou que são ofensivas no conteúdo
+            da vaga. Se for encontrada uma palavra que seja ofensiva o sistema informa e pede a confirmação do usuário
+            sobre se deseja ou não realmente continuar.
+        """
         ignora_palavra = int(request.form.get('ignora_palavra'))
         palavra_ignorada = request.form.get('palavra_ignorada')
         ignoradas_form = request.form.get('ignoradas') if request.form.get('ignoradas') is not None else 'hure'
@@ -421,13 +444,6 @@ def abre_vaga():
 
             bd.insert_one(vaga)
 
-            # query = "INSERT INTO vaga(empresa, cargo, descricao, requisitos, beneficios, salario, " \
-            #         "cidade, estado, pcd, tipo, prazo, publicacao) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
-            #
-            # bd.execute(query, (empresa, cargo, descricao, requisitos, beneficios, salario, cidade, estado, pcd, tipo, prazo, hoje, ))
-            #
-            # hure.hure.db.conn.hure.commit()
-
             flash('Vaga Anunciada com sucesso!', 'success')
             return redirect(url_for('rh.painel'))
 
@@ -437,6 +453,12 @@ def abre_vaga():
 @rh.route('processo/<idvaga>')
 @login_required
 def processo(idvaga):
+    """
+        RF-4: Consulta de candidaturas nas vagas publicadas
+
+        Página para verificação do andamento das candidaturas em uma vaga. Aqui a empresa consegue ver quem se candidatou
+        para uma vaga publicada.
+    """
     bd = bd_candidatos
     candidatos = list(bd.find({'$and': [{'candidaturas.id': ObjectId(idvaga)},
                                         {'candidaturas.empresa': int(session['empresa'])}]}))
@@ -508,6 +530,15 @@ def painel():
 @rh.route('banco-de-talentos/')
 @login_required
 def banco_de_talentos():
+    """
+        RF-3: Consulta de candidatos no banco de talentos
+
+        Página que permite a busca de candidatos no Banco de Talentos. Por padrão são exibidos os cadastros mais
+        recentes, mas a busca dinâmica pode ser realizada no campo de busca disponível.
+        O campo faz uma requisição via AJAX à função "get_candidatos(empresa)" que retorna os candidatos que atendem
+        aos critérios de busca.
+
+    """
     bd = bd_candidatos
     candidatos = list(bd.find({'candidaturas.empresa': int(session['empresa'])}).limit(48))
 
@@ -560,24 +591,6 @@ def curriculo(candidato):
     empresa = list(bd.find({'empresa': int(session['empresa'])}))
     empresa = empresa[0]
     print(empresa)
-    # # ENDEREÇO EMPRESA
-    # URL = "https://geocode.search.hereapi.com/v1/geocode"
-    # location = empresa['endereco']['rua'] + ', ' + empresa['endereco'][
-    #     'cidade'] + '/' + empresa['endereco']['estado']
-    # api_key = API_KEY  # Acquire from developer.here.com
-    # PARAMS = {'apikey': api_key, 'q': location}
-    #
-    # # sending get request and saving the response as response object
-    # r = requests.get(url=URL, params=PARAMS)
-    # data = r.json()
-    #
-    # latitude_empresa = data['items'][0]['position']['lat']
-    # longitude_empresa = data['items'][0]['position']['lng']
-    # endereco_url_empresa = location
-    #
-    # print(f'END. {endereco_url_empresa}')
-    # print(f'lat. {latitude_empresa}')
-    # print(f'long. {longitude_empresa}')
 
     mapa = empresa['mapa']
 
@@ -597,87 +610,87 @@ def curriculo(candidato):
                            idade=idade, anotacoes=anotacoes, mapa=mapa)
 
 
-@rh.route('/add_questionario_vaga/', methods=['GET', 'POST'])
-@login_required
-def add_questionario_vaga():
-    if request.method == 'POST':
-        vaga = request.form.get('vaga_id')
-        tipo_pergunta = int(request.form.get('tipo_pergunta'))
-        pergunta_obrigatoria = int(request.form.get('pergunta_obrigatoria'))
-        pergunta = request.form.get('pergunta')
-        opcoes_pergunta = request.form.get('opcoes_pergunta').split(';')
-        bd = bd_vagas
-        pgt = list(bd.find({'_id': ObjectId(vaga)}, {'perguntas.pgt': 1}))
-        qtd = 0
-        print('PGT:')
-        print(pgt)
-        if 'perguntas' in pgt[0]:
-            for p in pgt[0]['perguntas']:
-                for q in p.values():
-                    qtd = q + 1
-        else:
-            qtd = 0
+# @rh.route('/add_questionario_vaga/', methods=['GET', 'POST'])
+# @login_required
+# def add_questionario_vaga():
+#     if request.method == 'POST':
+#         vaga = request.form.get('vaga_id')
+#         tipo_pergunta = int(request.form.get('tipo_pergunta'))
+#         pergunta_obrigatoria = int(request.form.get('pergunta_obrigatoria'))
+#         pergunta = request.form.get('pergunta')
+#         opcoes_pergunta = request.form.get('opcoes_pergunta').split(';')
+#         bd = bd_vagas
+#         pgt = list(bd.find({'_id': ObjectId(vaga)}, {'perguntas.pgt': 1}))
+#         qtd = 0
+#         print('PGT:')
+#         print(pgt)
+#         if 'perguntas' in pgt[0]:
+#             for p in pgt[0]['perguntas']:
+#                 for q in p.values():
+#                     qtd = q + 1
+#         else:
+#             qtd = 0
+#
+#         bd.update({'_id': ObjectId(vaga)}, {
+#             '$push': {
+#                 'perguntas': {
+#                     'tipo': tipo_pergunta,
+#                     'obrigatoria': pergunta_obrigatoria,
+#                     'pergunta': pergunta,
+#                     'opcoes': opcoes_pergunta,
+#                     'pgt': qtd,
+#                     'ativa': 1
+#                 }
+#             }
+#         })
+#
+#         return redirect(url_for('rh.edita_vaga', idvaga=ObjectId(vaga)))
 
-        bd.update({'_id': ObjectId(vaga)}, {
-            '$push': {
-                'perguntas': {
-                    'tipo': tipo_pergunta,
-                    'obrigatoria': pergunta_obrigatoria,
-                    'pergunta': pergunta,
-                    'opcoes': opcoes_pergunta,
-                    'pgt': qtd,
-                    'ativa': 1
-                }
-            }
-        })
 
-        return redirect(url_for('rh.edita_vaga', idvaga=ObjectId(vaga)))
-
-
-@rh.route('/del-questionario-vaga/', methods=['GET', 'POST'])
-@login_required
-def del_questionario_vaga():
-    if request.method == 'POST':
-        vaga = request.form.get('id_vaga')
-        n = int(request.form.get('numero'))
-        bd = bd_vagas
-        pgt = list(bd.find({'_id': ObjectId(vaga)}, {'perguntas': 1}))
-        print('VAGAS:')
-        print(pgt[0]['perguntas'][0])
-        print(n)
-        remover = next((i for i, item in enumerate(pgt[0]['perguntas']) if item['pgt'] == n), None)
-        print(remover)
-        pgt[0]['perguntas'].pop(remover)
-
-        bd.update({'_id': ObjectId(vaga)}, {
-            '$unset': {
-                'perguntas': ""
-            }
-        })
-
-        for pergunta in pgt[0]['perguntas']:
-            bd.update({'_id': ObjectId(vaga)}, {
-                '$push': {
-                    'perguntas': {
-                        'tipo': pergunta['tipo'],
-                        'obrigatoria': pergunta['obrigatoria'],
-                        'pergunta': pergunta['pergunta'],
-                        'opcoes': pergunta['opcoes'],
-                        'pgt': pergunta['pgt'],
-                        'ativa': 1
-                    }
-                }
-            })
-
-        bd.update({'_id': ObjectId(vaga)}, {
-            '$set': {
-                'perguntas': {
-                    pgt[0]['perguntas']
-                }
-            }
-        })
-
-        return redirect(url_for('rh.edita_vaga', idvaga=ObjectId(vaga)))
+# @rh.route('/del-questionario-vaga/', methods=['GET', 'POST'])
+# @login_required
+# def del_questionario_vaga():
+#     if request.method == 'POST':
+#         vaga = request.form.get('id_vaga')
+#         n = int(request.form.get('numero'))
+#         bd = bd_vagas
+#         pgt = list(bd.find({'_id': ObjectId(vaga)}, {'perguntas': 1}))
+#         print('VAGAS:')
+#         print(pgt[0]['perguntas'][0])
+#         print(n)
+#         remover = next((i for i, item in enumerate(pgt[0]['perguntas']) if item['pgt'] == n), None)
+#         print(remover)
+#         pgt[0]['perguntas'].pop(remover)
+#
+#         bd.update({'_id': ObjectId(vaga)}, {
+#             '$unset': {
+#                 'perguntas': ""
+#             }
+#         })
+#
+#         for pergunta in pgt[0]['perguntas']:
+#             bd.update({'_id': ObjectId(vaga)}, {
+#                 '$push': {
+#                     'perguntas': {
+#                         'tipo': pergunta['tipo'],
+#                         'obrigatoria': pergunta['obrigatoria'],
+#                         'pergunta': pergunta['pergunta'],
+#                         'opcoes': pergunta['opcoes'],
+#                         'pgt': pergunta['pgt'],
+#                         'ativa': 1
+#                     }
+#                 }
+#             })
+#
+#         bd.update({'_id': ObjectId(vaga)}, {
+#             '$set': {
+#                 'perguntas': {
+#                     pgt[0]['perguntas']
+#                 }
+#             }
+#         })
+#
+#         return redirect(url_for('rh.edita_vaga', idvaga=ObjectId(vaga)))
 
 
 @rh.route('/add_opt_vaga/', methods=['GET', 'POST'])
@@ -714,6 +727,11 @@ def deleta_vaga(idvaga):
 @rh.route('add-anotacao-curriculo', methods=['POST'])
 @login_required
 def add_anotacao_curriculo():
+    """
+        RF-6: Adicionar anotações em um currículo no banco de talentos
+
+        Função para adicionar anotações em um currículo que está no Banco de talentos.
+    """
     if request.method == 'POST':
         candidato = request.form.get('candidato')
         empresa = int(session['empresa'])
@@ -751,6 +769,11 @@ def add_anotacao_curriculo():
 @rh.route('/del-anotacao-curriculo/', methods=['POST'])
 @login_required
 def del_anotacao_curriculo():
+    """
+            RF-6: Adicionar anotações em um currículo no banco de talentos
+
+            Função para remover anotações em um currículo que está no Banco de talentos.
+        """
     if request.method == 'POST':
         candidato = request.form.get('candidato')
         id_anotacao = request.form.get('id_anotacao')
@@ -905,6 +928,12 @@ def get_candidatos_proc(empresa, idvaga):
 @rh.route('/aprova-candidato', methods=['POST'])
 @login_required
 def aprova_candidato():
+    """
+       RF-7: Mover um candidato do Banco de Talentos para uma vaga aberta
+       RF-9: Aprovar ou reprovar candidatos
+
+       Aprova candidatos para uma determinada vaga em aberto.
+    """
     if request.method == 'POST':
         id_candidato = request.form.get('candidato')
         id_vaga = request.form.get('vaga')
@@ -1080,6 +1109,11 @@ def aprova_candidato():
 @rh.route('/reprova-candidato', methods=['POST'])
 @login_required
 def reprova_candidato():
+    """
+        RF-9: Aprovar ou reprovar candidatos
+
+        Reprova candidatos em uma determinada vaga em aberto.
+    """
     if request.method == 'POST':
         id_candidato = request.form.get('candidato')
         id_vaga = request.form.get('vaga')

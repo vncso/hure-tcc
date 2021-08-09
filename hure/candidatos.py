@@ -77,8 +77,11 @@ class JSONEncoder(json.JSONEncoder):
 @person.route('/register/', methods=['GET', 'POST'])
 def register():
     """
+        RF-1: Cadastro de currículos/candidatos no banco de talentos pelos candidatos
+
         Página para cadastro do currículo do candidato.
 
+        Recebe os dados preenchidos e salva no BD.
     """
     if request.method == 'POST':
         # dados pessoais
@@ -154,6 +157,7 @@ def register():
                     'fim': datafim_curso,
                     'descricao': descri_curso
                 }
+                # verifica se o curso foi preenchido. Se não for cria uma lista vazia
             ] if (curso is None or curso == '') or (instituicao is None or instituicao == '') else [],
             'experiencias': [
                 {
@@ -163,6 +167,7 @@ def register():
                     'fim': datafim_xp,
                     'descricao': descri_xp
                 }
+                # verifica se a experiência foi preenchida. Se não for cria uma lista vazia
             ] if (cargo is None or cargo == '') or (empresa is None or empresa == '') else [],
             'candidaturas': [],
             'anotacoes': [],
@@ -230,7 +235,7 @@ def register():
 @person.route('/verifica-conta/', methods=['GET', 'POST'])
 def login_verifica():
     """
-        Verificação da conta pelo e-mail. O código é enviado para p e-mail informado ao criar o cadastro.
+        Verificação da conta pelo e-mail. O código (variável 'chave') é enviado para p e-mail informado ao criar o cadastro.
 
     """
     if request.method == 'POST':
@@ -255,6 +260,9 @@ def login_verifica():
 
 @person.route('/login/', methods=['GET', 'POST'])
 def login():
+    """
+        login para os candidatos.
+    """
     senha = request.form.get('senha')
     usuario = request.form.get('usuario')
     vaga = request.form.get('idvaga')
@@ -288,6 +296,9 @@ def foto(foto):
 @person.route('/curriculo/')
 @login_required_candidato
 def curriculo():
+    """
+        Página com o currículo do candidato. Essa página busca no BD todos os dados preenchidos anteriormente e os exibe
+    """
     bd = bd_candidatos
     user = list(bd.find({'email': session['cand_id']}).limit(1))
     user = user[0]
@@ -298,6 +309,10 @@ def curriculo():
 @person.route('/atualiza-curriculo/', methods=['POST'])
 @login_required_candidato
 def atualiza_curriculo():
+    """
+        Código para a atualização dos dados do currículo. Quando o candidato editar uma informação, aqui é feito o update
+
+    """
     bd = bd_candidatos
     if request.method == 'POST':
         print(request.form)
@@ -326,11 +341,6 @@ def atualiza_curriculo():
         site = request.form.get('site')
         skype = request.form.get('skype')
         id_user = request.form.get('id_user')
-
-        # foto.save(os.path.join('/static/imgs', secure_filename(foto.filename)))
-
-        # print(foto)
-        # print(foto.filename)
 
         bd.update({'_id': ObjectId(id_user)}, {
             '$set': {
@@ -373,13 +383,20 @@ def atualiza_curriculo():
 
 @person.route('/cadastra-curriculo-bt/', methods=['POST'])
 def cadastra_curriculo_bt():
+    """
+        Essa página funciona da mesma maneira que o cadastro pela plataforma, mas é acessada externamente, pelo site
+        do cliente na página "trabalhe conosco" do site. Dessa forma ao se candidatar atraveś dessa página o candidato
+        automaticamente já vai para o banco de talentos da empresa onde o cadastro foi realizado.
+    """
     if request.method == 'POST':
 
+        # dados da empresa
         id_vaga = request.form.get('id_vaga')
         empresa_bt = request.form.get('empresa_bt')
         cidade_empresa = request.form.get('cidade_empresa')
         estado_empresa = request.form.get('estado_empresa')
 
+        # dados pessoais
         nome = request.form.get('nome')
         sobrenome = request.form.get('sobrenome')
         genero = request.form.get('genero')
@@ -388,9 +405,7 @@ def cadastra_curriculo_bt():
         senha = request.form.get('senha')
         conf_senha = request.form.get('conf_senha')
 
-        print(f'SENHA: {senha}')
-        print(f'CONF. SENHA: {conf_senha}')
-
+        # endereço e contatos
         cep = request.form.get('cep')
         rua = request.form.get('rua')
         numero = request.form.get('numero')
@@ -401,12 +416,14 @@ def cadastra_curriculo_bt():
         tel2 = request.form.get('telefone2')
         linkedin = request.form.get('linkedin')
 
+        # cursos
         curso = request.form.get('curso')
         instituicao = request.form.get('instituicao')
         descri_curso = request.form.get('descri_curso')
         dataini_curso = request.form.get('dataini_curso')
         datafim_curso = request.form.get('datafim_curso')
 
+        # experiência profissional
         cargo = request.form.get('cargo')
         empresa = request.form.get('empresa')
         descri_xp = request.form.get('descri_xp')
